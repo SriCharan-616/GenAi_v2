@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
-import { ShoppingBag, User, Menu, X } from 'lucide-react';
+import React from 'react';
+import { ShoppingBag, User, LogOut } from 'lucide-react';
 import { TRANSLATION_KEYS } from '../../constants/translationKeys';
 import LanguageSelector from '../ui/LanguageSelector';
 import Button from '../ui/Button';
 import { useTranslator } from '../../services/translationContext';
+import { useNavigate } from 'react-router-dom';
 
-const Navigation = ({ isLoggedIn, setIsLoggedIn }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+const Navigation = () => {
   const { t, language, setLanguage, languages } = useTranslator();
+  const navigate = useNavigate();
 
   const navLinks = [
-    { key: TRANSLATION_KEYS.NAV_HOME, href: '#home' },
+    { key: TRANSLATION_KEYS.NAV_HOME, href: '/' },
     { key: TRANSLATION_KEYS.NAV_EXPLORE, href: '#explore' },
     { key: TRANSLATION_KEYS.NAV_ABOUT, href: '#about' },
-    { key: TRANSLATION_KEYS.NAV_CONTACT, href: '#contact' }
+    { key: TRANSLATION_KEYS.NAV_CONTACT, href: '#contact' },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
+    navigate('/');
+  };
+
+  // Always check localStorage for login status
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   return (
     <nav className="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-blue-100">
@@ -51,60 +60,41 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn }) => {
             languages={languages}
           />
 
-          {isLoggedIn && (
-            <Button
-              variant="primary"
-              size="md"
-              icon={User}
-              onClick={() => setIsLoggedIn(false)}
-              ariaLabel="Access profile menu"
-            >
-              {t(TRANSLATION_KEYS.NAV_MY_PROFILE)}
-            </Button>
-          )}
+          {isLoggedIn ? (
+  <>
+    <Button
+      variant="primary"
+      size="sm" // smaller size
+      icon={User}
+      onClick={() => navigate('/artisan-profile')}
+      ariaLabel="Access profile menu"
+      className="px-3 py-1 text-sm" // optional fine-tuning
+    >
+      {t(TRANSLATION_KEYS.NAV_MY_PROFILE)}
+    </Button>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-blue-50"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+    <Button
+      variant="secondary"
+      size="sm" // smaller size
+      icon={LogOut}
+      onClick={handleLogout}
+      ariaLabel="Logout"
+      className="px-3 py-1 text-sm" // optional fine-tuning
+    >
+      {t(TRANSLATION_KEYS.NAV_LOGOUT) || 'Logout'}
+    </Button>
+  </>
+) : (
+  <Button
+    variant="primary"
+    size="md"
+    onClick={() => navigate('/login')}
+  >
+    {t(TRANSLATION_KEYS.NAV_LOGIN) || 'Login'}
+  </Button>
+)}
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden bg-white/95 border-t border-blue-100 py-4 space-y-2 px-4">
-          {navLinks.map((link) => (
-            <a
-              key={link.key}
-              href={link.href}
-              className="block text-gray-700 py-2 px-3 rounded-lg hover:bg-blue-50"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t(link.key)}
-            </a>
-          ))}
-
-          {isLoggedIn && (
-            <div className="pt-2 border-t border-blue-100 mt-2">
-              <Button
-                variant="primary"
-                size="md"
-                icon={User}
-                onClick={() => {
-                  setIsLoggedIn(false);
-                  setIsMenuOpen(false);
-                }}
-                className="w-full"
-              >
-                {t(TRANSLATION_KEYS.NAV_MY_PROFILE)}
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
     </nav>
   );
 };

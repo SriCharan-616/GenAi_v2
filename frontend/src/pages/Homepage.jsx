@@ -17,16 +17,18 @@ const Homepage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('trending');
   const [currentReview, setCurrentReview] = useState(0);
+  const { 
+  selectedLanguage, 
+  translations, 
+  languages, 
+  loading: translationsLoading, 
+  error: translationsError, 
+  changeLanguage 
+} = useTranslations('en'); // 'en' is default
 
-  const {
-    selectedLanguage,
-    translations,
-    languages,
-    loading: translationsLoading,
-    error: translationsError,
-    changeLanguage
-  } = useTranslations('en');
 
+  const t = (key) => translations[key] || key;
+  
   const { speak, stop, isSpeaking, isSupported } = useSpeech(selectedLanguage);
 
   // Load saved login state
@@ -100,8 +102,6 @@ const Homepage = () => {
         translations={translations}
         selectedLanguage={selectedLanguage}
         onLanguageChange={changeLanguage}
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
         languages={languages}
         loading={translationsLoading}
       />
@@ -117,7 +117,7 @@ const Homepage = () => {
               id="hero-title"
               className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-500 bg-clip-text text-transparent leading-tight"
             >
-              {translations[TRANSLATION_KEYS.HERO_TITLE]}
+              {t(TRANSLATION_KEYS.HERO_TITLE)}
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               {translations[TRANSLATION_KEYS.HERO_SUBTITLE]}
@@ -141,7 +141,7 @@ const Homepage = () => {
                 {translations[TRANSLATION_KEYS.AUTH_SELL_BUY_CONTEXT]}
               </h3>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button variant="secondary" size="lg" icon={LogIn} onClick={() => setIsLoggedIn(true)} ariaLabel="Sign in to your account">
+                <Button variant="secondary" size="lg" icon={LogIn} onClick={() => navigate('/login')} ariaLabel="Sign in to your account">
                   {translations[TRANSLATION_KEYS.AUTH_SIGNIN]}
                 </Button>
                 <span className="text-gray-500 font-medium" aria-hidden="true">

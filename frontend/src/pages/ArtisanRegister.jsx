@@ -193,15 +193,17 @@ const ArtisanRegister = () => {
                   {errors.phone && <p className="mt-2 text-sm text-red-600">{errors.phone}</p>}
                 </div>
                     <div>
-  <label htmlFor="password">Password <span className="text-red-500">*</span></label>
+  <label htmlFor="password" className='block text-sm font-semibold text-gray-700 mb-2'>Password <span className="text-red-500">*</span></label>
   <input
     type="password"
     id="password"
     name="password"
     value={formData.password}
     onChange={handleInputChange}
-    className="w-full px-4 py-3 border rounded-xl"
-    placeholder="Enter your password"
+    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.phone ? 'border-red-500' : 'border-gray-300'
+                    }`}
+    placeholder={translations.enterPassword || 'Enter your password'}
   />
 </div>
                 {/* Email */}

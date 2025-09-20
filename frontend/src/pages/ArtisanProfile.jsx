@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
 
-
+import { useNavigate } from 'react-router-dom';
 // Components
 
 import Navigation from '../components/common/Navigation';
 import FloatingButtons from '../components/common/FloatingButtons';
 
 const ArtisanProfile = () => {
+    const navigate = useNavigate();
   const [artisanData, setArtisanData] = useState(null);
   const [activeTab, setActiveTab] = useState('create'); // 'create' or 'products'
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
   const [showProductForm, setShowProductForm] = useState(true);
   
   // Product form state
@@ -45,15 +46,14 @@ const ArtisanProfile = () => {
     const savedArtisanData = localStorage.getItem('artisanData');
     const savedLoginState = localStorage.getItem('isLoggedIn');
     
-    if (savedLoginState === 'true') {
-      setIsLoggedIn(true);
+    if (savedLoginState === 'false') {
+      navigate('/');
+      return;
     }
+    
     
     if (savedArtisanData) {
       setArtisanData(JSON.parse(savedArtisanData));
-    } else {
-      // Redirect to registration if no artisan data
-     
     }
   }, []);
 
@@ -194,17 +194,6 @@ const ArtisanProfile = () => {
   };
 
   // Loading state
-  if (translationsLoading && Object.keys(translations).length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading Profile...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (!artisanData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50">
@@ -239,8 +228,7 @@ const ArtisanProfile = () => {
         translations={translations}
         selectedLanguage={selectedLanguage}
         onLanguageChange={changeLanguage}
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
+        
         languages={languages}
         loading={translationsLoading}
       />
@@ -259,26 +247,7 @@ const ArtisanProfile = () => {
           </div>
 
           {/* Profile Summary */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              {translations.profileSummary || 'Profile Summary'}
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <p><strong>{translations.name || 'Name'}:</strong> {artisanData.name}</p>
-                <p><strong>{translations.profession || 'Profession'}:</strong> {artisanData.profession}</p>
-                <p><strong>{translations.phone || 'Phone'}:</strong> {artisanData.phone}</p>
-                {artisanData.email && (
-                  <p><strong>{translations.email || 'Email'}:</strong> {artisanData.email}</p>
-                )}
-              </div>
-              <div>
-                <p><strong>{translations.address || 'Address'}:</strong> {artisanData.address}</p>
-                <p><strong>{translations.productsCount || 'Products'}:</strong> {artisanData.products?.length || 0}</p>
-                <p><strong>{translations.memberSince || 'Member Since'}:</strong> {new Date(artisanData.registrationDate).toLocaleDateString()}</p>
-              </div>
-            </div>
-          </div>
+          
 
           {/* Tabs */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
@@ -583,7 +552,6 @@ const ArtisanProfile = () => {
         speak={speak} 
         translations={translations} 
         isSpeaking={isSpeaking}
-        isLoggedIn={isLoggedIn}
       />
 
       {/* Error boundary for speech not supported */}

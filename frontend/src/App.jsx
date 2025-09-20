@@ -1,7 +1,14 @@
 import React from 'react';
 
+import './styles/globals.css';
+import AppRoutes from './Routes';
+
 function App() {
-  return <div>App component</div>;
+  return (
+    <div className="App">
+      return <AppRoutes />;
+    </div>
+  );
 }
 
 export default App;

@@ -1,0 +1,25 @@
+@keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+          .animate-float,
+          .animate-pulse,
+          .animate-bounce {
+            animation: none;
+          }
+          .transition-all,
+          .transition-opacity,
+          .transition-transform {
+            transition: none;
+          }
+        }
+        
+        .focus-visible {
+          outline: 2px solid #3b82f6;
+          outline-offset: 2px;
+        }

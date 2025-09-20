@@ -44,7 +44,7 @@ const DEFAULT_TRANSLATIONS = {
 class TranslationService {
   constructor() {
     this.cache = new Map();
-    this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+    this.baseURL = 'http://localhost:3001/api';
   }
 
   async fetchTranslations(languageCode, retries = 3) {

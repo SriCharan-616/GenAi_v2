@@ -16,10 +16,11 @@
     "vite": "^4.4.5"
   },
   "scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test"
-},
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview"
+}
+,
   "browserslist": {
     "production": [
       ">0.2%",

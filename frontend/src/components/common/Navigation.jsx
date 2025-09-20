@@ -6,8 +6,8 @@ import Button from '../ui/Button';
 import { useTranslator } from '../../services/translationContext';
 import { useNavigate } from 'react-router-dom';
 
-const Navigation = () => {
-  const { t, language, setLanguage, languages } = useTranslator();
+const Navigation = ({ languages }) => {
+  const { t, language, setLanguage } = useTranslator();
   const navigate = useNavigate();
 
   const navLinks = [

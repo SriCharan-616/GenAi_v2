@@ -19,7 +19,7 @@ const Login = () => {
   // Check localStorage only once on mount
   useEffect(() => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
-      navigate('/artisan-profile', { replace: true });
+      navigate('/artisan-profile');
     }
   }, []);
 
@@ -71,7 +71,7 @@ const Login = () => {
       localStorage.setItem('isLoggedIn', 'true');
 
       // Navigate immediately - no state needed
-      navigate('/artisan-profile', { replace: true });
+      navigate('/artisan-profile');
 
     } catch (error) {
       console.error('Login error:', error);
@@ -99,8 +99,6 @@ const Login = () => {
         translations={translations}
         selectedLanguage={selectedLanguage}
         onLanguageChange={changeLanguage}
-        // Navigation can check localStorage directly too
-        isLoggedIn={localStorage.getItem('isLoggedIn') === 'true'}
         languages={languages}
         loading={translationsLoading}
       />
@@ -192,7 +190,7 @@ const Login = () => {
               </p>
               <div className="space-y-2">
                 <a
-                  href="/artisan-register"
+                  href="/register"
                   className="block w-full py-3 px-4 bg-green-100 text-green-700 rounded-xl font-medium hover:bg-green-200 transition-colors"
                 >
                   {translations.artisanSignup || 'Register as Artisan'}
@@ -207,7 +205,6 @@ const Login = () => {
         speak={speak} 
         translations={translations} 
         isSpeaking={isSpeaking}
-        isLoggedIn={localStorage.getItem('isLoggedIn') === 'true'}
       />
     </div>
   );

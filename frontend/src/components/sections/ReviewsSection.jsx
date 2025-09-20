@@ -18,14 +18,14 @@ const ReviewsSection = () => { // ✅ Remove translations prop
     { 
       name: "Maria Rodriguez", 
       rating: 5, 
-      text: "This platform transformed my small pottery business! Sales increased by 300%.", 
+      text: 'review1', 
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612e6cd?w=60",
       location: "Mexico City"
     },
     { 
       name: "James Chen", 
       rating: 5, 
-      text: "The image enhancement feature is amazing. My products look professional now.", 
+      text: "review2", 
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60",
       location: "San Francisco"
     },
@@ -93,10 +93,10 @@ const ReviewsSection = () => { // ✅ Remove translations prop
               
               <div className="text-center">
                 <cite className="font-bold text-lg text-gray-800 not-italic">
-                  {t(reviews[currentReview].name)}
+                  {reviews[currentReview].name}
                 </cite>
                 <p className="text-gray-500 text-sm mt-1">
-                  {t(reviews[currentReview].location)}
+                  {reviews[currentReview].location}
                 </p>
               </div>
             </div>

@@ -30,7 +30,8 @@ export const TRANSLATION_KEYS = {
   
   // Reviews
   REVIEWS_TITLE: 'reviews.title',
-  REVIEW1 :'This platform transformed my small pottery business! Sales increased by 300%.',
+  REVIEW1 :'review1',
+  REVIEW2:'review2',
   // Auth
   AUTH_SELL_BUY_CONTEXT: 'auth.sellBuyContext',
   AUTH_SIGNIN: 'auth.signin',

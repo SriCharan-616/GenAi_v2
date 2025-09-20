@@ -27,6 +27,8 @@ const DEFAULT_TRANSLATIONS = {
   'sample.before': 'Before',
   'sample.after': 'After',
   'reviews.title': 'What Our Artisans Say',
+  'review1':'This platform transformed my small pottery business! Sales increased by 300%.',
+  'review2':'The image enhancement feature is amazing. My products look professional now.',
   'auth.sellBuyContext': 'Want to sell your crafts or buy unique items?',
   'auth.signin': 'Sign In',
   'auth.register': 'Register',

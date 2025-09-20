@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
-import { useSEO } from '../utils/seo';
-import { homepageSEO, generateStructuredData } from '../utils/seo';
+
 import { LogIn, UserPlus, Volume2, ArrowRight, Heart, Eye, Share2, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { TRANSLATION_KEYS } from '../constants/translationKeys';
@@ -11,7 +10,7 @@ import { LazyImage } from '../utils/lazyLoading';
 
 import Navigation from '../components/common/Navigation';
 import FloatingButtons from '../components/common/FloatingButtons';
-import Button from '../components/ui/Button';
+import Button from '../components/ui/Button'; 
 import Card from '../components/ui/Card';
 
 const Homepage = () => {
@@ -29,21 +28,6 @@ const Homepage = () => {
   } = useTranslations('en');
 
   const { speak, stop, isSpeaking, isSupported } = useSpeech(selectedLanguage);
-
-  // SEO Setup
-  const seoConfig = {
-    ...homepageSEO,
-    structuredData: generateStructuredData(),
-    hreflang: {
-      'en': window.location.href,
-      'es': window.location.href + '?lang=es',
-      'hi': window.location.href + '?lang=hi',
-      'fr': window.location.href + '?lang=fr',
-      'de': window.location.href + '?lang=de',
-      'ar': window.location.href + '?lang=ar'
-    }
-  };
-  useSEO(seoConfig);
 
   // Load saved login state
   useEffect(() => {

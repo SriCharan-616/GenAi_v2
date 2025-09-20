@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
-import { useSEO } from '../utils/seo';
+
 
 // Components
 
@@ -38,17 +38,7 @@ const ArtisanProfile = () => {
   const { speak, stop, isSpeaking, isSupported } = useSpeech(selectedLanguage);
 
   // SEO Setup
-  const seoConfig = {
-    title: 'Artisan Profile - ArtisanHub',
-    description: 'Manage your artisan profile and showcase your handcrafted products.',
-    keywords: 'artisan profile, product management, handmade products, craft business',
-    canonical: window.location.href,
-    ogTitle: 'Artisan Profile - ArtisanHub',
-    ogDescription: 'Manage your artisan business and products.',
-    ogType: 'profile'
-  };
-
-  useSEO(seoConfig);
+  
 
   // Load artisan data and login state
   useEffect(() => {
@@ -242,18 +232,7 @@ const ArtisanProfile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 relative">
-      {/* Background Animation */}
-     
       
-      {/* Global CSS */}
-
-      {/* Skip to main content link */}
-      <a 
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50"
-      >
-        Skip to main content
-      </a>
 
       {/* Navigation */}
       <Navigation 

@@ -1,0 +1,2 @@
+// translationKeys placeholder
+export default {};

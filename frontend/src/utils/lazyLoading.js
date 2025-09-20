@@ -1,0 +1,2 @@
+// lazyLoading placeholder
+export default {};

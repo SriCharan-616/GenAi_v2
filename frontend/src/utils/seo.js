@@ -1,0 +1,2 @@
+// seo placeholder
+export default {};

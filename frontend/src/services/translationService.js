@@ -1,0 +1,2 @@
+// translationService placeholder
+export default {};

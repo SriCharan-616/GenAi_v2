@@ -3,7 +3,7 @@ import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
 import { useSEO } from '../utils/seo';
 import { homepageSEO, generateStructuredData } from '../utils/seo';
-import '../styles/Homepage.css';
+
 
 // Components
 import BackgroundAnimation from '../components/common/BackgroundAnimation';

@@ -3,11 +3,14 @@ import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
 import { useSEO } from '../utils/seo';
 import '../styles/ArtisanRegister.css';
+import { useNavigate } from 'react-router-dom';
 
 // Components
 import BackgroundAnimation from '../components/common/BackgroundAnimation';
 import Navigation from '../components/common/Navigation';
 import FloatingButtons from '../components/common/FloatingButtons';
+
+
 
 const ArtisanRegister = () => {
   const [formData, setFormData] = useState({
@@ -99,20 +102,18 @@ const ArtisanRegister = () => {
     return newErrors;
   };
 
+  const navigate = useNavigate();
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
     
     setIsSubmitting(true);
     
     try {
       // Simulate API call
+      
+      navigate("/artisan-profile");
+
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Save artisan data to localStorage (in real app, this would be an API call)

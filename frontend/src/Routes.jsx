@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Homepage from './pages/Homepage';
 import ArtisanRegister from './pages/ArtisanRegister';
-
+import ArtisanProfile from './pages/ArtisanProfile';
 
 const AppRoutes = () => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -14,6 +14,10 @@ const AppRoutes = () => {
         <Route
           path="/register"
           element={<ArtisanRegister />}
+        />
+        <Route
+          path="/artisan-profile"
+          element={<ArtisanProfile />}
         />
       </Routes>
     </Router>

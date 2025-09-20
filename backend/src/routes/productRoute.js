@@ -1,10 +1,14 @@
 import express from "express";
-import { uploadProduct } from "../controllers/productController.js";
-import upload from "../config/multerConfig.js";
+import { uploadAndTriggerZap } from "../config/multerConfig.js";
 
 const router = express.Router();
 
-// Upload multiple images
-router.post("/upload", upload.array("images", 10), uploadProduct); // max 10 images
+router.post("/upload", uploadAndTriggerZap("image"), (req, res) => {
+  res.json({
+    success: true,
+    message: "Image uploaded to Cloudinary and Zapier triggered!",
+    fileUrl: req.file.path,
+  });
+});
 
 export default router;

@@ -2,10 +2,11 @@ import React from 'react';
 import { LogIn, UserPlus } from 'lucide-react';
 import { TRANSLATION_KEYS } from '../../constants/translationKeys';
 import Button from '../ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 const AuthSection = ({ translations, isLoggedIn, setIsLoggedIn }) => {
   if (isLoggedIn) return null; // Don't show if already logged in
-
+  const navigate = useNavigate();
   const handleSignIn = () => {
     // In a real app, this would open a sign-in modal or navigate to sign-in page
     setIsLoggedIn(true);
@@ -13,7 +14,7 @@ const AuthSection = ({ translations, isLoggedIn, setIsLoggedIn }) => {
 
   const handleRegister = () => {
     // In a real app, this would open a registration modal or navigate to registration page
-    setIsLoggedIn(true);
+    navigate('/register');
   };
 
   return (

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslations } from '../hooks/useTranslations';
+import { useTranslator } from '../services/translationContext'; // ✅ Use context instead
 import { useSpeech } from '../hooks/useSpeech';
 import { useSEO } from '../utils/seo';
 import { homepageSEO, generateStructuredData } from '../utils/seo';
-
 
 // Components
 import BackgroundAnimation from '../components/common/BackgroundAnimation';
@@ -20,16 +19,10 @@ import ExploreMore from '../components/sections/ExploreMore';
 const Homepage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  const {
-    selectedLanguage,
-    translations,
-    languages,
-    loading: translationsLoading,
-    error: translationsError,
-    changeLanguage
-  } = useTranslations('en');
+  // ✅ Use the context system instead of useTranslations hook
+  const { language, translations, t, setLanguage } = useTranslator();
 
-  const { speak, stop, isSpeaking, isSupported } = useSpeech(selectedLanguage);
+  const { speak, stop, isSpeaking, isSupported } = useSpeech(language);
 
   // SEO Setup
   const seoConfig = {
@@ -60,15 +53,8 @@ const Homepage = () => {
     localStorage.setItem('isLoggedIn', isLoggedIn.toString());
   }, [isLoggedIn]);
 
-  // Handle translation errors
-  useEffect(() => {
-    if (translationsError) {
-      console.error('Translation error:', translationsError);
-    }
-  }, [translationsError]);
-
-  // Loading state
-  if (translationsLoading && Object.keys(translations).length === 0) {
+  // Loading state - simplified since context handles loading
+  if (!translations || Object.keys(translations).length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50">
         <div className="text-center">
@@ -84,35 +70,25 @@ const Homepage = () => {
       {/* Background Animation */}
       <BackgroundAnimation />
 
-      {/* Global CSS for animations (fixed: removed jsx/global) */}
-      
-
-      {/* Skip to main content link for accessibility */}
-
-      {/* Navigation */}
+      {/* Navigation - ✅ Remove all translation props */}
       <Navigation 
-        translations={translations}
-        selectedLanguage={selectedLanguage}
-        onLanguageChange={changeLanguage}
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
-        languages={languages}
-        loading={translationsLoading}
       />
 
-      {/* Main Content */}
+      {/* Main Content - ✅ Remove all translation props */}
       <main id="main-content">
-        <HeroSection translations={translations} speak={speak} isSpeaking={isSpeaking} />
-        <AuthSection translations={translations} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-        <IntroSection translations={translations} />
-        <ProductDisplay translations={translations} />
-        <SampleImages translations={translations} />
-        <ReviewsSection translations={translations} />
-        <ExploreMore translations={translations} />
+        <HeroSection speak={speak} isSpeaking={isSpeaking} />
+        <AuthSection isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+        <IntroSection />
+        <ProductDisplay />
+        <SampleImages />
+        <ReviewsSection />
+        <ExploreMore />
       </main>
 
-      {/* Floating Action Buttons */}
-      <FloatingButtons speak={speak} translations={translations} isSpeaking={isSpeaking} isLoggedIn={isLoggedIn} />
+      {/* Floating Action Buttons - ✅ Remove translation props */}
+      <FloatingButtons speak={speak} isSpeaking={isSpeaking} isLoggedIn={isLoggedIn} />
 
       {/* Error boundary for speech not supported */}
       {!isSupported && (

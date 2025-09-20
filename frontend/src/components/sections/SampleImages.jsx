@@ -1,10 +1,12 @@
 import React from 'react';
 import { TRANSLATION_KEYS } from '../../constants/translationKeys';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useTranslator } from '../../services/translationContext'; // ✅ Add this import
 import { LazyImage } from '../../utils/lazyLoading';
 import Card from '../ui/Card';
 
-const SampleImages = ({ translations }) => {
+const SampleImages = () => { // ✅ Remove translations prop
+  const { t } = useTranslator(); // ✅ Add this hook
   const { elementRef, hasBeenVisible } = useIntersectionObserver({
     threshold: 0.1,
     triggerOnce: true
@@ -41,7 +43,7 @@ const SampleImages = ({ translations }) => {
             id="samples-title"
             className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800"
           >
-            {translations[TRANSLATION_KEYS.SAMPLE_TITLE]}
+            {t(TRANSLATION_KEYS.SAMPLE_TITLE)} {/* ✅ Use t() function */}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -55,7 +57,7 @@ const SampleImages = ({ translations }) => {
                 <div className="flex gap-4 items-center">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-600 mb-2">
-                      {translations[TRANSLATION_KEYS.SAMPLE_BEFORE]}
+                      {t(TRANSLATION_KEYS.SAMPLE_BEFORE)} {/* ✅ Use t() function */}
                     </p>
                     <LazyImage 
                       src={sample.before} 
@@ -72,13 +74,13 @@ const SampleImages = ({ translations }) => {
                   
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-600 mb-2">
-                      {translations[TRANSLATION_KEYS.SAMPLE_AFTER]}
+                      {t(TRANSLATION_KEYS.SAMPLE_AFTER)} {/* ✅ Use t() function */}
                     </p>
                     <LazyImage 
                       src={sample.after} 
                       alt={`${sample.alt} - after enhancement`}
                       className="w-full h-32 object-cover rounded-xl"
-                      placeholder="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIiBmaWxsPSIjOTQ5NGE0Ij5BZnRlcjwvdGV4dD48L3N2Zz4="
+                      placeholder="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ci8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIiBmaWxsPSIjOTQ5NGE0Ij5BZnRlcjwvdGV4dD48L3N2Zz4="
                     />
                   </div>
                 </div>

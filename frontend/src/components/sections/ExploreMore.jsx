@@ -1,9 +1,12 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { TRANSLATION_KEYS } from '../../constants/translationKeys';
+import { useTranslator } from '../../services/translationContext'; // ✅ Add this import
 import Button from '../ui/Button';
 
-const ExploreMore = ({ translations }) => {
+const ExploreMore = () => { // ✅ Remove translations prop
+  const { t } = useTranslator(); // ✅ Add this hook
+  
   const handleViewAll = () => {
     // In a real app, this would navigate to the products page
     console.log('Navigating to all products...');
@@ -19,11 +22,11 @@ const ExploreMore = ({ translations }) => {
           id="explore-title"
           className="text-3xl md:text-4xl font-bold mb-8"
         >
-          {translations[TRANSLATION_KEYS.EXPLORE_TITLE]}
+          {t(TRANSLATION_KEYS.EXPLORE_TITLE)} {/* ✅ Use t() function */}
         </h2>
         
         <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-          {translations[TRANSLATION_KEYS.EXPLORE_SUBTITLE]}
+          {t(TRANSLATION_KEYS.EXPLORE_SUBTITLE)} {/* ✅ Use t() function */}
         </p>
         
         <Button
@@ -35,7 +38,7 @@ const ExploreMore = ({ translations }) => {
           iconPosition="right"
           ariaLabel="View all products in our marketplace"
         >
-          {translations[TRANSLATION_KEYS.EXPLORE_VIEW_ALL]}
+          {t(TRANSLATION_KEYS.EXPLORE_VIEW_ALL)} {/* ✅ Use t() function */}
         </Button>
         </div>
       

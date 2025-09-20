@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { TRANSLATION_KEYS } from '../../constants/translationKeys';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useTranslator } from '../../services/translationContext'; // ✅ Add this import
 import { LazyImage } from '../../utils/lazyLoading';
 import Card from '../ui/Card';
 
-const ReviewsSection = ({ translations }) => {
+const ReviewsSection = () => { // ✅ Remove translations prop
+  const { t } = useTranslator(); // ✅ Add this hook
   const [currentReview, setCurrentReview] = useState(0);
   const { elementRef, hasBeenVisible } = useIntersectionObserver({
     threshold: 0.1,
@@ -60,7 +62,7 @@ const ReviewsSection = ({ translations }) => {
             id="reviews-title"
             className="text-3xl md:text-4xl font-bold mb-12 text-gray-800"
           >
-            {translations[TRANSLATION_KEYS.REVIEWS_TITLE]}
+            {t(TRANSLATION_KEYS.REVIEWS_TITLE)} {/* ✅ Use t() function */}
           </h2>
           
           <Card 
@@ -86,15 +88,15 @@ const ReviewsSection = ({ translations }) => {
               </div>
               
               <blockquote className="text-xl text-gray-600 mb-6 italic leading-relaxed max-w-3xl">
-                "{reviews[currentReview].text}"
+                "{t(reviews[currentReview].text)}"
               </blockquote>
               
               <div className="text-center">
                 <cite className="font-bold text-lg text-gray-800 not-italic">
-                  {reviews[currentReview].name}
+                  {t(reviews[currentReview].name)}
                 </cite>
                 <p className="text-gray-500 text-sm mt-1">
-                  {reviews[currentReview].location}
+                  {t(reviews[currentReview].location)}
                 </p>
               </div>
             </div>

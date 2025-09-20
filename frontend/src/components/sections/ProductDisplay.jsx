@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Heart, Eye, Share2 } from 'lucide-react';
 import { TRANSLATION_KEYS } from '../../constants/translationKeys';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useTranslator } from '../../services/translationContext'; // ✅ Add this import
 import { LazyImage } from '../../utils/lazyLoading';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 
-const ProductDisplay = ({ translations }) => {
+const ProductDisplay = () => { // ✅ Remove translations prop
+  const { t } = useTranslator(); // ✅ Add this hook
   const [activeTab, setActiveTab] = useState('trending');
   const { elementRef, hasBeenVisible } = useIntersectionObserver({
     threshold: 0.1,
@@ -60,9 +62,11 @@ const ProductDisplay = ({ translations }) => {
                       : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
                   }`}
                   aria-pressed={activeTab === tab}
-                  aria-label={`View ${translations[TRANSLATION_KEYS[`PRODUCTS_${tab.toUpperCase()}`]]} products`}
+                  aria-label={`View ${t(TRANSLATION_KEYS[`PRODUCTS_${tab.toUpperCase()}`])} products`} 
+                  // ✅ Use t() function
                 >
-                  {translations[TRANSLATION_KEYS[`PRODUCTS_${tab.toUpperCase()}`]]}
+                  {t(TRANSLATION_KEYS[`PRODUCTS_${tab.toUpperCase()}`])} 
+                  {/* ✅ Use t() function */}
                 </button>
               ))}
             </div>
@@ -128,6 +132,7 @@ const ProductDisplay = ({ translations }) => {
         </div>
       </div>
     </section>
-)};
+  );
+};
 
 export default ProductDisplay;

@@ -1,8 +1,11 @@
 import React from 'react';
 import { TRANSLATION_KEYS } from '../../constants/translationKeys';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useTranslator } from '../../services/translationContext'; // ✅ Add this import
 
-const IntroSection = ({ translations }) => {
+const IntroSection = () => { // ✅ Remove translations prop
+  const { t } = useTranslator(); // ✅ Add this hook
+  
   const { elementRef, hasBeenVisible } = useIntersectionObserver({
     threshold: 0.1,
     triggerOnce: true
@@ -21,10 +24,10 @@ const IntroSection = ({ translations }) => {
             id="intro-title"
             className="text-3xl md:text-4xl font-bold mb-8 text-gray-800"
           >
-            {translations[TRANSLATION_KEYS.INTRO_WHO_WE_ARE]}
+            {t(TRANSLATION_KEYS.INTRO_WHO_WE_ARE)} {/* ✅ Use t() function */}
           </h2>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            {translations[TRANSLATION_KEYS.INTRO_TEXT]}
+            {t(TRANSLATION_KEYS.INTRO_TEXT)} {/* ✅ Use t() function */}
           </p>
         </div>
       </div>

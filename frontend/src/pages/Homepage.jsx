@@ -3,6 +3,7 @@ import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
 import { useSEO } from '../utils/seo';
 import { homepageSEO, generateStructuredData } from '../utils/seo';
+import '../styles/Homepage.css';
 
 // Components
 import BackgroundAnimation from '../components/common/BackgroundAnimation';
@@ -84,37 +85,7 @@ const Homepage = () => {
       <BackgroundAnimation />
 
       {/* Global CSS for animations (fixed: removed jsx/global) */}
-      <style>
-        {`
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-          }
-          .animate-float {
-            animation: float 3s ease-in-out infinite;
-          }
-
-          /* Accessibility improvements */
-          @media (prefers-reduced-motion: reduce) {
-            .animate-float,
-            .animate-pulse,
-            .animate-bounce {
-              animation: none;
-            }
-            .transition-all,
-            .transition-opacity,
-            .transition-transform {
-              transition: none;
-            }
-          }
-
-          /* Focus improvements */
-          .focus-visible {
-            outline: 2px solid #3b82f6;
-            outline-offset: 2px;
-          }
-        `}
-      </style>
+      
 
       {/* Skip to main content link for accessibility */}
       <a 

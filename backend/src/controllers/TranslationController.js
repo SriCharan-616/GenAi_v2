@@ -5,7 +5,7 @@ config();
 
 class TranslationController {
   constructor() {
-    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
     // Initialize the model here
     this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 

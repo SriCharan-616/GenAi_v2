@@ -4,7 +4,7 @@ import { useSpeech } from '../hooks/useSpeech';
 import { useSEO } from '../utils/seo';
 
 // Components
-import BackgroundAnimation from '../components/common/BackgroundAnimation';
+
 import Navigation from '../components/common/Navigation';
 import FloatingButtons from '../components/common/FloatingButtons';
 
@@ -243,31 +243,9 @@ const ArtisanProfile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 relative">
       {/* Background Animation */}
-      <BackgroundAnimation />
+     
       
       {/* Global CSS */}
-      <style jsx global>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-          .animate-float,
-          .animate-pulse,
-          .animate-bounce {
-            animation: none;
-          }
-          .transition-all,
-          .transition-opacity,
-          .transition-transform {
-            transition: none;
-          }
-        }
-      `}</style>
 
       {/* Skip to main content link */}
       <a 

@@ -6,7 +6,7 @@ import '../styles/ArtisanRegister.css';
 import { useNavigate } from 'react-router-dom';
 
 // Components
-import BackgroundAnimation from '../components/common/BackgroundAnimation';
+
 import Navigation from '../components/common/Navigation';
 import FloatingButtons from '../components/common/FloatingButtons';
 
@@ -168,7 +168,7 @@ const ArtisanRegister = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 relative">
       {/* Background Animation */}
-      <BackgroundAnimation />
+      
       
       {/* Global CSS for animations */}
      

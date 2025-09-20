@@ -6,9 +6,9 @@ import { homepageSEO, generateStructuredData } from '../utils/seo';
 import { LogIn, UserPlus, Volume2, ArrowRight, Heart, Eye, Share2, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { TRANSLATION_KEYS } from '../constants/translationKeys';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+
 import { LazyImage } from '../utils/lazyLoading';
-import BackgroundAnimation from '../components/common/BackgroundAnimation';
+
 import Navigation from '../components/common/Navigation';
 import FloatingButtons from '../components/common/FloatingButtons';
 import Button from '../components/ui/Button';
@@ -111,7 +111,7 @@ const Homepage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 relative">
-      <BackgroundAnimation />
+      
       <Navigation 
         translations={translations}
         selectedLanguage={selectedLanguage}

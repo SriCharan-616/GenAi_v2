@@ -44,10 +44,16 @@ const DEFAULT_TRANSLATIONS = {
 class TranslationService {
   constructor() {
     this.cache = new Map();
-    this.baseURL = 'http://localhost:3001/api';
+    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    this.availableLanguagesCache = null;
   }
 
   async fetchTranslations(languageCode, retries = 3) {
+    // Return defaults for English to avoid unnecessary API calls
+    if (languageCode === 'en') {
+      return DEFAULT_TRANSLATIONS;
+    }
+
     // Check cache first
     if (this.cache.has(languageCode)) {
       return this.cache.get(languageCode);
@@ -58,14 +64,12 @@ class TranslationService {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased to 10s
 
         const response = await fetch(`${this.baseURL}/translations/${languageCode}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keys: DEFAULT_TRANSLATIONS }),
           signal: controller.signal
         });
 
@@ -83,6 +87,11 @@ class TranslationService {
         // Validate response structure
         if (!translations || typeof translations !== 'object') {
           throw new TranslationError('Invalid translation data received', languageCode);
+        }
+
+        // Check if AI returned an error
+        if (translations.error) {
+          throw new TranslationError(translations.error, languageCode);
         }
 
         // Merge with defaults to ensure all keys exist
@@ -123,22 +132,44 @@ class TranslationService {
 
   // Get available languages from backend
   async getAvailableLanguages() {
+    // Return cached result if available
+    if (this.availableLanguagesCache) {
+      return this.availableLanguagesCache;
+    }
+
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
       const response = await fetch(`${this.baseURL}/languages`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      return await response.json();
+      const languages = await response.json();
+      
+      // Validate that we received an array
+      if (!Array.isArray(languages)) {
+        throw new Error('Invalid language data format received');
+      }
+
+      // Cache the result
+      this.availableLanguagesCache = languages;
+      
+      return languages;
+
     } catch (error) {
       console.error('Failed to fetch available languages:', error);
       
-      // Return default languages
-      return [
+      // Return default languages as fallback
+      const fallbackLanguages = [
         { code: 'en', name: 'English', flag: '🇺🇸' },
         { code: 'es', name: 'Español', flag: '🇪🇸' },
         { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
@@ -146,6 +177,9 @@ class TranslationService {
         { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
         { code: 'ar', name: 'العربية', flag: '🇸🇦' }
       ];
+
+      this.availableLanguagesCache = fallbackLanguages;
+      return fallbackLanguages;
     }
   }
 
@@ -155,7 +189,19 @@ class TranslationService {
       this.cache.delete(languageCode);
     } else {
       this.cache.clear();
+      this.availableLanguagesCache = null;
     }
+  }
+
+  // Preload translations for commonly used languages
+  async preloadTranslations(languageCodes = ['es', 'hi', 'fr']) {
+    const promises = languageCodes.map(code => 
+      this.fetchTranslations(code).catch(err => 
+        console.warn(`Failed to preload ${code}:`, err.message)
+      )
+    );
+    
+    await Promise.all(promises);
   }
 }
 

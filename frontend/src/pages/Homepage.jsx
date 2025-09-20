@@ -63,7 +63,6 @@ const Homepage = () => {
   useEffect(() => {
     if (translationsError) {
       console.error('Translation error:', translationsError);
-      // You could show a toast notification here
     }
   }, [translationsError]);
 
@@ -83,37 +82,39 @@ const Homepage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 relative">
       {/* Background Animation */}
       <BackgroundAnimation />
-      
-      {/* Global CSS for animations */}
-      <style jsx global>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        /* Accessibility improvements */
-        @media (prefers-reduced-motion: reduce) {
-          .animate-float,
-          .animate-pulse,
-          .animate-bounce {
-            animation: none;
+
+      {/* Global CSS for animations (fixed: removed jsx/global) */}
+      <style>
+        {`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
           }
-          .transition-all,
-          .transition-opacity,
-          .transition-transform {
-            transition: none;
+          .animate-float {
+            animation: float 3s ease-in-out infinite;
           }
-        }
-        
-        /* Focus improvements */
-        .focus-visible {
-          outline: 2px solid #3b82f6;
-          outline-offset: 2px;
-        }
-      `}</style>
+
+          /* Accessibility improvements */
+          @media (prefers-reduced-motion: reduce) {
+            .animate-float,
+            .animate-pulse,
+            .animate-bounce {
+              animation: none;
+            }
+            .transition-all,
+            .transition-opacity,
+            .transition-transform {
+              transition: none;
+            }
+          }
+
+          /* Focus improvements */
+          .focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+          }
+        `}
+      </style>
 
       {/* Skip to main content link for accessibility */}
       <a 
@@ -136,43 +137,17 @@ const Homepage = () => {
 
       {/* Main Content */}
       <main id="main-content">
-        {/* Hero Section */}
-        <HeroSection 
-          translations={translations} 
-          speak={speak} 
-          isSpeaking={isSpeaking}
-        />
-
-        {/* Auth Section */}
-        <AuthSection 
-          translations={translations} 
-          isLoggedIn={isLoggedIn} 
-          setIsLoggedIn={setIsLoggedIn} 
-        />
-        
-        {/* Introduction Section */}
+        <HeroSection translations={translations} speak={speak} isSpeaking={isSpeaking} />
+        <AuthSection translations={translations} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <IntroSection translations={translations} />
-
-        {/* Product Display Section */}
         <ProductDisplay translations={translations} />
-
-        {/* Sample Enhanced Images */}
         <SampleImages translations={translations} />
-
-        {/* Customer Reviews */}
         <ReviewsSection translations={translations} />
-
-        {/* Explore More Section */}
         <ExploreMore translations={translations} />
       </main>
 
       {/* Floating Action Buttons */}
-      <FloatingButtons 
-        speak={speak} 
-        translations={translations} 
-        isSpeaking={isSpeaking}
-        isLoggedIn={isLoggedIn}
-      />
+      <FloatingButtons speak={speak} translations={translations} isSpeaking={isSpeaking} isLoggedIn={isLoggedIn} />
 
       {/* Error boundary for speech not supported */}
       {!isSupported && (

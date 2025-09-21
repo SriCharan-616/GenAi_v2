@@ -115,6 +115,7 @@ const Login = () => {
       }
 
       if (result.token && result.user) {
+      
         // Store authentication data
         localStorage.setItem('token', result.token);
         localStorage.setItem('currentUser', JSON.stringify(result.user));

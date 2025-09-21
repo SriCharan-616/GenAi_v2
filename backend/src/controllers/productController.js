@@ -10,7 +10,7 @@ dotenv.config();
 // Initialize Gemini AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-// Helper to send image to Gemini AI and get enhanced image
+// Helper to enhance image via Gemini AI
 const sendToGemini = async (imageBuffer) => {
   const base64Image = imageBuffer.toString("base64");
   const model = genAI.getGenerativeModel({
@@ -38,7 +38,7 @@ const sendToGemini = async (imageBuffer) => {
 // Upload a new product
 export const uploadProduct = async (req, res) => {
   try {
-    const { name, description, price, category, story, seller_id } = req.body;
+    const { name, description, price, category, seller_id } = req.body;
     const files = req.files;
 
     if (!seller_id) return res.status(400).json({ message: "Seller ID required" });
@@ -48,29 +48,29 @@ export const uploadProduct = async (req, res) => {
     const sellerDoc = await db.collection("sellers").where("userId", "==", seller_id).limit(1).get();
     if (sellerDoc.empty) return res.status(400).json({ message: "Seller not found" });
 
-    // Create product
+    // Create product doc
     const productRef = await db.collection("products").add({
       sellerId: seller_id,
       name,
       description: description || "",
       price: parseFloat(price),
       category: category || "",
-      story: story || "",
       stock: 0,
-      images: [],
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     const productId = productRef.id;
-    const imageUrls = [];
+    const uploadsDir = path.join(process.cwd(), "uploads");
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
+    const imagePaths = [];
+
+    // Store images locally and paths in product_images
     if (files && files.length) {
-      const uploadsDir = path.join(process.cwd(), "uploads");
-      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
       for (const file of files) {
         try {
+          // enhance image
           const enhancedBase64 = await sendToGemini(file.buffer);
           const buffer = Buffer.from(enhancedBase64, "base64");
 
@@ -79,27 +79,34 @@ export const uploadProduct = async (req, res) => {
           const savePath = path.join(uploadsDir, fileName);
 
           fs.writeFileSync(savePath, buffer);
-          imageUrls.push(`/uploads/${fileName}`);
+          const relativePath = `/uploads/${fileName}`;
+          imagePaths.push(relativePath);
+
+          // store image record separately
+          await db.collection("product_images").add({
+            productId,
+            imagePath: relativePath,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
         } catch (err) {
           console.error("Image enhancement error:", err);
         }
       }
-
-      // Update product with images
-      await productRef.update({
-        images: imageUrls,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
     }
 
-    res.json({ message: "Product uploaded successfully", productId, imageCount: imageUrls.length });
+    res.json({
+      message: "Product uploaded successfully",
+      productId,
+      imageCount: imagePaths.length,
+      firstImage: imagePaths[0] || null,
+    });
   } catch (err) {
     console.error("Upload product error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// Get all products with optional filters
+// Get all products with their first image
 export const getProducts = async (req, res) => {
   try {
     const { category, sellerId, limit = 20, startAfter } = req.query;
@@ -109,85 +116,39 @@ export const getProducts = async (req, res) => {
     if (category) query = query.where("category", "==", category);
     if (sellerId) query = query.where("sellerId", "==", sellerId);
 
-    query = query.limit(parseInt(limit));
+    query = query.orderBy("createdAt", "desc").limit(parseInt(limit));
 
     if (startAfter) {
       const startDoc = await db.collection("products").doc(startAfter).get();
-      query = query.startAfter(startDoc);
+      if (startDoc.exists) query = query.startAfter(startDoc);
     }
 
-    query = query.orderBy("createdAt", "desc");
-
     const snapshot = await query.get();
-    const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const products = [];
+
+    for (const doc of snapshot.docs) {
+      const product = { id: doc.id, ...doc.data() };
+
+      // get first image for this product
+      const imgSnap = await db
+        .collection("product_images")
+        .where("productId", "==", doc.id)
+        .orderBy("createdAt", "asc")
+        .limit(1)
+        .get();
+
+      if (!imgSnap.empty) {
+        product.photo = imgSnap.docs[0].data().imagePath; // for frontend display
+      } else {
+        product.photo = null;
+      }
+
+      products.push(product);
+    }
 
     res.json({ products });
   } catch (err) {
     console.error("Get products error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// Get single product
-export const getProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const productDoc = await db.collection("products").doc(id).get();
-
-    if (!productDoc.exists) return res.status(404).json({ message: "Product not found" });
-
-    res.json({ product: { id: productDoc.id, ...productDoc.data() } });
-  } catch (err) {
-    console.error("Get product error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// Update product
-export const updateProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, description, price, category, story, stock } = req.body;
-
-    const updateData = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
-    if (name !== undefined) updateData.name = name;
-    if (description !== undefined) updateData.description = description;
-    if (price !== undefined) updateData.price = parseFloat(price);
-    if (category !== undefined) updateData.category = category;
-    if (story !== undefined) updateData.story = story;
-    if (stock !== undefined) updateData.stock = parseInt(stock);
-
-    await db.collection("products").doc(id).update(updateData);
-    res.json({ message: "Product updated successfully" });
-  } catch (err) {
-    console.error("Update product error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// Delete product
-export const deleteProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const productDoc = await db.collection("products").doc(id).get();
-
-    if (!productDoc.exists) return res.status(404).json({ message: "Product not found" });
-
-    const product = productDoc.data();
-
-    // Delete images from disk
-    if (product.images?.length) {
-      const uploadsDir = path.join(process.cwd(), "uploads");
-      product.images.forEach(imageUrl => {
-        const filePath = path.join(uploadsDir, path.basename(imageUrl));
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      });
-    }
-
-    await db.collection("products").doc(id).delete();
-    res.json({ message: "Product deleted successfully" });
-  } catch (err) {
-    console.error("Delete product error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

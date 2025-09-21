@@ -131,7 +131,7 @@ const ArtisanProfile = () => {
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     
       formData.append('seller_id', currentUser.id);
-      const response = await fetch('${import.meta.env.VITE_API_URL}/api/products/uploadprod', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/uploadprod`, {
         method: 'POST',
         body: formData
       });

@@ -26,7 +26,7 @@ const Navigation = ({ body }) => {
     setIsTranslating(true); // start full-page loading
 
     try {
-      const response = await fetch('${import.meta.env.VITE_API_URL}/api/translate', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/translate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lang: newLang, text }),

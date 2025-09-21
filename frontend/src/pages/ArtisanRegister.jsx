@@ -28,9 +28,12 @@ const ArtisanRegister = () => {
 
   // Load saved login state
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const savedLoginState = localStorage.getItem('isLoggedIn');
-    if (savedLoginState === 'true') {
+    if (token && savedLoginState === 'true') {
       setIsLoggedIn(true);
+      // Optionally redirect if already logged in
+      // navigate('/artisan-profile');
     }
   }, []);
 
@@ -42,10 +45,19 @@ const ArtisanRegister = () => {
       [name]: value
     }));
 
+    // Clear field-specific errors when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
         [name]: ''
+      }));
+    }
+
+    // Clear submit error when user makes changes
+    if (errors.submit) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: ''
       }));
     }
   };
@@ -54,32 +66,40 @@ const ArtisanRegister = () => {
   const validateForm = () => {
     const newErrors = {};
 
+    // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = text.nameRequired;
+      newErrors.name = text.nameRequired || 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = text.nameTooShort || 'Name must be at least 2 characters';
     }
 
+    // Phone validation
     if (!formData.phone.trim()) {
-      newErrors.phone = text.phoneRequired;
-    } else if (!/^\+?[\d\s\-\(\)]+$/.test(formData.phone)) {
-      newErrors.phone = text.phoneInvalid;
+      newErrors.phone = text.phoneRequired || 'Phone number is required';
+    } else if (!/^\+?[\d\s\-\(\)]{10,}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = text.phoneInvalid || 'Please enter a valid phone number';
     }
 
+    // Password validation
     if (!formData.password.trim()) {
-      newErrors.password = text.passwordRequired;
+      newErrors.password = text.passwordRequired || 'Password is required';
     } else if (formData.password.length < 6) {
-      newErrors.password = text.passwordTooShort;
+      newErrors.password = text.passwordTooShort || 'Password must be at least 6 characters';
     }
 
+    // Email validation (optional but must be valid if provided)
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = text.emailInvalid;
+      newErrors.email = text.emailInvalid || 'Please enter a valid email address';
     }
 
+    // Business name validation
     if (!formData.businessName.trim()) {
-      newErrors.businessName = text.businessNameRequired;
+      newErrors.businessName = text.businessNameRequired || 'Business name is required';
     }
 
+    // Business location validation
     if (!formData.businessLocation.trim()) {
-      newErrors.businessLocation = text.businessLocationRequired;
+      newErrors.businessLocation = text.businessLocationRequired || 'Business location is required';
     }
 
     return newErrors;
@@ -89,40 +109,72 @@ const ArtisanRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrors({}); // Clear all errors
 
     try {
+      // Validate form
       const newErrors = validateForm();
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
         setIsSubmitting(false);
         return;
       }
-      console.log(formData);
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+
+      console.log('Submitting registration data:', formData);
+
+      const response = await fetch(`http://localhost:5000/api/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(formData)
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to register');
-      }
-
       const result = await response.json();
 
-      if (result.success) {
+      if (!response.ok) {
+        throw new Error(result.message || 'Registration failed');
+      }
+
+      if (result.success && result.token) {
+        // Store authentication data
+        localStorage.setItem('token', result.token);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('artisanData', JSON.stringify(result.user));
-        navigate('/artisan-profile');
+        
+        console.log('Registration successful:', result.user);
+        
+        // Navigate to profile page
+        navigate('/artisan-profile', { 
+          state: { 
+            message: 'Registration successful! Welcome to our artisan community.',
+            user: result.user 
+          }
+        });
       } else {
-        setErrors({ submit: result.message || text.registrationFailed });
+        setErrors({ submit: result.message || text.registrationFailed || 'Registration failed' });
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setErrors({ submit: text.registrationFailedTryLater });
+      
+      // Handle specific error types
+      if (error.message.includes('409') || error.message.includes('already exists')) {
+        setErrors({ submit: text.userAlreadyExists || 'User with this email or phone already exists' });
+      } else if (error.message.includes('network') || error.message.includes('fetch')) {
+        setErrors({ submit: text.networkError || 'Network error. Please check your connection.' });
+      } else {
+        setErrors({ submit: error.message || text.registrationFailedTryLater || 'Registration failed. Please try again later.' });
+      }
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Handle navigation to login
+  const handleLoginNavigation = (e) => {
+    e.preventDefault();
+    navigate('/login');
   };
 
   return (
@@ -135,20 +187,20 @@ const ArtisanRegister = () => {
             {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                {text.joinArtisanCommunity}
+                {text.joinArtisanCommunity || 'Join Our Artisan Community'}
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                {text.registerDescription}
+                {text.registerDescription || 'Register to showcase your crafts and connect with customers worldwide'}
               </p>
             </div>
 
             {/* Form */}
             <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 {/* Name */}
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {text.fullName} <span className="text-red-500">*</span>
+                    {text.fullName || 'Full Name'} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -156,18 +208,24 @@ const ArtisanRegister = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.name ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                     }`}
-                    placeholder={text.enterFullName}
+                    placeholder={text.enterFullName || 'Enter your full name'}
+                    autoComplete="name"
                   />
-                  {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
+                  {errors.name && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {errors.name}
+                    </p>
+                  )}
                 </div>
 
                 {/* Phone */}
                 <div>
                   <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {text.phoneNumber} <span className="text-red-500">*</span>
+                    {text.phoneNumber || 'Phone Number'} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -175,18 +233,24 @@ const ArtisanRegister = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.phone ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                     }`}
-                    placeholder={text.enterPhone}
+                    placeholder={text.enterPhone || 'Enter your phone number'}
+                    autoComplete="tel"
                   />
-                  {errors.phone && <p className="mt-2 text-sm text-red-600">{errors.phone}</p>}
+                  {errors.phone && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {errors.phone}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password */}
                 <div>
                   <label htmlFor="password" className='block text-sm font-semibold text-gray-700 mb-2'>
-                    {text.password} <span className="text-red-500">*</span>
+                    {text.password || 'Password'} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="password"
@@ -194,19 +258,26 @@ const ArtisanRegister = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.password ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                     }`}
-                    placeholder={text.enterPassword}
+                    placeholder={text.enterPassword || 'Enter your password (min 6 characters)'}
+                    autoComplete="new-password"
+                    minLength={6}
                   />
-                  {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
+                  {errors.password && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {errors.password}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email */}
                 <div>
                   <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {text.email}{' '}
-                    <span className="text-gray-500 text-xs">({text.optional})</span>
+                    {text.email || 'Email'}{' '}
+                    <span className="text-gray-500 text-xs">({text.optional || 'optional'})</span>
                   </label>
                   <input
                     type="email"
@@ -214,18 +285,24 @@ const ArtisanRegister = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                     }`}
-                    placeholder={text.enterEmail}
+                    placeholder={text.enterEmail || 'Enter your email (optional)'}
+                    autoComplete="email"
                   />
-                  {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
+                  {errors.email && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {errors.email}
+                    </p>
+                  )}
                 </div>
 
                 {/* Business Name */}
                 <div>
                   <label htmlFor="businessName" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {text.businessName} <span className="text-red-500">*</span>
+                    {text.businessName || 'Business Name'} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -233,18 +310,24 @@ const ArtisanRegister = () => {
                     name="businessName"
                     value={formData.businessName}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.businessName ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.businessName ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                     }`}
-                    placeholder={text.enterBusinessName}
+                    placeholder={text.enterBusinessName || 'Enter your business/craft name'}
+                    autoComplete="organization"
                   />
-                  {errors.businessName && <p className="mt-2 text-sm text-red-600">{errors.businessName}</p>}
+                  {errors.businessName && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {errors.businessName}
+                    </p>
+                  )}
                 </div>
 
                 {/* Business Location */}
                 <div>
                   <label htmlFor="businessLocation" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {text.businessLocation} <span className="text-red-500">*</span>
+                    {text.businessLocation || 'Business Location'} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -252,20 +335,27 @@ const ArtisanRegister = () => {
                     name="businessLocation"
                     value={formData.businessLocation}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.businessLocation ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.businessLocation ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                     }`}
-                    placeholder={text.enterBusinessLocation}
+                    placeholder={text.enterBusinessLocation || 'Enter your city/location'}
+                    autoComplete="address-level2"
                   />
                   {errors.businessLocation && (
-                    <p className="mt-2 text-sm text-red-600">{errors.businessLocation}</p>
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {errors.businessLocation}
+                    </p>
                   )}
                 </div>
 
                 {/* Submit Error */}
                 {errors.submit && (
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                    <p className="text-sm text-red-600">{errors.submit}</p>
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 animate-pulse">
+                    <div className="flex items-center">
+                      <span className="text-red-500 mr-2">❌</span>
+                      <p className="text-sm text-red-600 font-medium">{errors.submit}</p>
+                    </div>
                   </div>
                 )}
 
@@ -276,16 +366,16 @@ const ArtisanRegister = () => {
                   className={`w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-200 ${
                     isSubmitting
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 shadow-lg hover:shadow-xl'
+                      : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 shadow-lg hover:shadow-xl active:scale-95'
                   }`}
                 >
                   {isSubmitting ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      {text.registering}
+                      {text.registering || 'Registering...'}
                     </div>
                   ) : (
-                    text.registerAsArtisan
+                    text.registerAsArtisan || 'Register as Artisan'
                   )}
                 </button>
               </form>
@@ -293,10 +383,13 @@ const ArtisanRegister = () => {
               {/* Login Link */}
               <div className="mt-8 text-center">
                 <p className="text-gray-600">
-                  {text.alreadyRegistered}{' '}
-                  <a href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-                    {text.signIn}
-                  </a>
+                  {text.alreadyRegistered || 'Already have an account?'}{' '}
+                  <button 
+                    onClick={handleLoginNavigation}
+                    className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors duration-200"
+                  >
+                    {text.signIn || 'Sign In'}
+                  </button>
                 </p>
               </div>
             </div>
@@ -308,7 +401,7 @@ const ArtisanRegister = () => {
 
       {!isSupported && (
         <div className="fixed bottom-4 left-4 bg-yellow-100 border border-yellow-300 text-yellow-800 px-4 py-2 rounded-lg shadow-lg z-40">
-          {text.speechNotSupported}
+          {text.speechNotSupported || 'Speech synthesis not supported in this browser'}
         </div>
       )}
     </div>

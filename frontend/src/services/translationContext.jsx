@@ -61,7 +61,7 @@ const defaultText = {
   productName: "Product Name",
   enterProductName: "Enter product name",
   category: "Category",
-  selectCategory: "Select category",
+  selectCategorytext: "Select category",
   price: "Price",
   description: "Description",
   enterDescription: "Describe your product, materials used, dimensions, etc.",

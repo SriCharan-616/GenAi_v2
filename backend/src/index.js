@@ -11,13 +11,13 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// Middleware: Allow requests from any origin
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173", // Add your frontend URL
-  credentials: true
+  origin: "*",       // <-- Accept requests from ANY origin
+  credentials: true, // If you want to allow cookies, set to true (but "*" + credentials usually doesn't work together)
 }));
 
-app.use(express.json({ limit: '10mb' })); // Increase limit for image uploads
+app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files (for uploaded images)
@@ -33,7 +33,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api', translationRoutes); // More specific path for translations
+app.use('/api', translationRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoute);
 
@@ -45,8 +45,6 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
   });
 });
-
-
 
 const PORT = process.env.PORT || 5000;
 

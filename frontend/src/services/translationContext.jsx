@@ -81,7 +81,12 @@ const defaultText = {
   priceRequired: "Valid price is required",
   categoryRequired: "Category is required",
   productCreationError: "Failed to create product. Please try again.",
-  speechNotSupported: "Text-to-speech is not supported in your browser."
+  speechNotSupported: "Text-to-speech is not supported in your browser.",
+  selectCategory : [
+  'woodwork', 'pottery', 'textiles', 'jewelry',
+  'metalwork', 'paintings', 'sculptures', 'glasswork',
+  'leatherwork', 'ceramics', 'other'
+]
 };
 
 export function MyProvider({ children }) {

@@ -53,10 +53,12 @@ const Navigation = ({ body }) => {
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
-    navigate('/');
+    window.location.href = '/';
   };
 
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+ const [isLoggedIn] = React.useState(() => 
+  localStorage.getItem('isLoggedIn') === 'true'
+);
 
   return (
     <>
@@ -82,13 +84,13 @@ const Navigation = ({ body }) => {
           {/* Desktop Links */}
           <div className="hidden lg:flex items-center space-x-6">
             {navLinks.map((link) => (
-              <a
+              <button
                 key={link.href}
-                href={link.href}
+                onClick={() => navigate(link.href)}
                 className="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-lg hover:bg-blue-50"
               >
                 {link.key}
-              </a>
+              </button>
             ))}
           </div>
 

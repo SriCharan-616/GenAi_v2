@@ -3,11 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useMyContext } from "../services/translationContext";
 import Navigation from '../components/common/Navigation';
 
-const categoryKeys = [
-  'woodwork', 'pottery', 'textiles', 'jewelry',
-  'metalwork', 'paintings', 'sculptures', 'glasswork',
-  'leatherwork', 'ceramics', 'other'
-];
 
 const ArtisanProfile = () => {
   const navigate = useNavigate();
@@ -23,19 +18,44 @@ const ArtisanProfile = () => {
   const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
 
   // Load artisan data
-  useEffect(() => {
-    const savedArtisanData = localStorage.getItem('artisanData');
-    const savedLoginState = localStorage.getItem('isLoggedIn');
+ useEffect(() => {
+  const savedLoginState = localStorage.getItem('isLoggedIn');
+  if (savedLoginState !== 'true') {
+    navigate('/');
+    return;
+  }
 
-    if (savedLoginState !== 'true') {
-      navigate('/');
-      return;
-    }
+  const savedArtisanData = localStorage.getItem('artisanData');
+  if (savedArtisanData) {
+    setArtisanData(JSON.parse(savedArtisanData));
+  } else {
+    // Fetch artisan data from server
+    const defaultArtisan = {
+      id: '1',
+      name: 'Artisan Name',
+      products: []
+    };
+    setArtisanData(defaultArtisan);
+    localStorage.setItem('artisanData', JSON.stringify(defaultArtisan));
+  }
+}, []);
 
-    if (savedArtisanData) {
-      setArtisanData(JSON.parse(savedArtisanData));
-    }
-  }, []);
+const fetchArtisanData = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user?.id) return;
+
+    const res = await fetch(`http://localhost:5000/api/artisan/${user.id}`);
+    if (!res.ok) throw new Error('Failed to fetch artisan data');
+
+    const data = await res.json();
+    setArtisanData(data);
+    localStorage.setItem('artisanData', JSON.stringify(data));
+  } catch (error) {
+    console.error(error);
+    navigate('/'); // Redirect if something fails
+  }
+};
 
   const handleProductInputChange = (e) => {
     const { name, value } = e.target;
@@ -188,9 +208,9 @@ const ArtisanProfile = () => {
                       onChange={handleProductInputChange}
                       className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 transition-all ${productErrors.category ? 'border-red-500' : 'border-gray-300'}`}
                     >
-                      <option value="">{text.selectCategory}</option>
-                      {categoryKeys.map((key) => (
-                        <option key={key} value={key}>{text[key]}</option>
+                      
+                      {text.selectCategory.map((key) => (
+                        <option key={key} value={key}>{key}</option>
                       ))}
                     </select>
                     {productErrors.category && <p className="mt-2 text-sm text-red-600">{productErrors.category}</p>}

@@ -42,7 +42,7 @@ const defaultText = {
 
 export function MyProvider({ children }) {
   const [text, setText] = useState(() => {
-    // Check sessionStorage first
+    
     const cached = sessionStorage.getItem("translations");
     return cached ? JSON.parse(cached) : defaultText;
   });

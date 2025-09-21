@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
 
 import { useNavigate } from 'react-router-dom';

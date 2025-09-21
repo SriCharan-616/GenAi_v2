@@ -142,19 +142,21 @@ npm run build	Build production bundle
 npm run preview	Preview production build
 # Features
 
-🔒 Firebase-based Auth (Customer / Artisan roles)
+ Firebase-based Auth (Customer / Artisan roles)
 
-🛍️ AI-enhanced Product Uploads (auto image enhancement)
+ AI-enhanced Product Advertisement
 
-🌐 Multilingual chatbot support + speech-to-text
+ Automatic Social Media Upload
+ 
+ Multilingual chatbot support + speech-to-text + text-to-speech
 
-🕶️ AR/3D Product View (immersive shopping)
+ AR/3D Product View (immersive shopping)
 
-📊 Analytics Dashboard for artisans
+ Analytics Dashboard for artisans
 
-🖼️ Cloudinary image storage
+ Cloudinary image storage
 
-📱 Responsive design powered by Tailwind CSS
+ Responsive design powered by Tailwind CSS
 
 # Deployment
 

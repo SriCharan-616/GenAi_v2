@@ -1,8 +1,8 @@
 import React from 'react';
 import { MessageCircle, Volume2 } from 'lucide-react';
-import { TRANSLATION_KEYS } from '../../constants/translationKeys';
 
-const FloatingButtons = ({ speak, translations, isSpeaking, isLoggedIn }) => {
+
+const FloatingButtons = ({ speak, translations, isSpeaking }) => {
   const handleVoiceClick = () => {
     speak(translations[TRANSLATION_KEYS.HERO_TITLE]);
   };

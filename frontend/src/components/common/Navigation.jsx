@@ -1,20 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ShoppingBag, User, LogOut } from 'lucide-react';
-import { TRANSLATION_KEYS } from '../../constants/translationKeys';
-import LanguageSelector from '../ui/LanguageSelector';
+import { useMyContext } from "../../services/translationContext";
 import Button from '../ui/Button';
-import { useTranslator } from '../../services/translationContext';
 import { useNavigate } from 'react-router-dom';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
 
-const Navigation = ({ languages }) => {
-  const { t, language, setLanguage } = useTranslator();
+const Navigation = ({ body }) => {
+  const { text, setText } = useMyContext();
   const navigate = useNavigate();
 
+  const [isTranslating, setIsTranslating] = useState(false);
+  const currentLanguage = localStorage.getItem('currentLanguage') || 'en';
+
+  const availableLanguages = {
+    'en': 'English', 'hi': 'Hindi', 'bn': 'Bengali', 'te': 'Telugu',
+    'mr': 'Marathi', 'ta': 'Tamil', 'gu': 'Gujarati', 'ur': 'Urdu',
+    'kn': 'Kannada', 'or': 'Odia', 'pa': 'Punjabi', 'as': 'Assamese',
+    'ml': 'Malayalam', 'fr': 'French', 'es': 'Spanish', 'de': 'German',
+    'it': 'Italian', 'pt': 'Portuguese', 'ru': 'Russian', 'ja': 'Japanese',
+    'ko': 'Korean', 'zh': 'Chinese', 'ar': 'Arabic'
+  };
+
+  const onLanguageChange = async (newLang) => {
+    localStorage.setItem('currentLanguage', newLang);
+    setIsTranslating(true); // start full-page loading
+
+    try {
+      const response = await fetch('http://localhost:5000/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lang: newLang, text }),
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch translations');
+
+      const data = await response.json();
+      setText(data);
+    } catch (error) {
+      console.error('Translation error:', error);
+    } finally {
+      setIsTranslating(false); // stop loading
+    }
+  };
+
   const navLinks = [
-    { key: TRANSLATION_KEYS.NAV_HOME, href: '/' },
-    { key: TRANSLATION_KEYS.NAV_EXPLORE, href: '#explore' },
-    { key: TRANSLATION_KEYS.NAV_ABOUT, href: '#about' },
-    { key: TRANSLATION_KEYS.NAV_CONTACT, href: '#contact' },
+    { key: text.home, href: '/' },
+    { key: text.explore, href: '#explore' },
+    { key: text.about, href: '#about' },
+    { key: text.contact, href: '#contact' },
   ];
 
   const handleLogout = () => {
@@ -23,79 +56,85 @@ const Navigation = ({ languages }) => {
     navigate('/');
   };
 
-  // Always check localStorage for login status
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-blue-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-        {/* Logo */}
-        <div className="flex items-center">
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-xl shadow-lg">
-            <ShoppingBag className="w-6 h-6" />
+    <>
+      {/* Full-page loading overlay */}
+      {isTranslating && (
+        <div className="fixed inset-0 bg-white/70 z-50 flex items-center justify-center">
+          <LoadingSpinner className="w-12 h-12 text-blue-600" />
+        </div>
+      )}
+
+      <nav className="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-blue-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-xl shadow-lg">
+              <ShoppingBag className="w-6 h-6" />
+            </div>
+            <span className="ml-3 text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              ArtisanHub
+            </span>
           </div>
-          <span className="ml-3 text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-            ArtisanHub
-          </span>
-        </div>
 
-        {/* Desktop Links */}
-        <div className="hidden lg:flex items-center space-x-6">
-          {navLinks.map((link) => (
-            <a
-              key={link.key}
-              href={link.href}
-              className="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-lg hover:bg-blue-50"
+          {/* Desktop Links */}
+          <div className="hidden lg:flex items-center space-x-6">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-lg hover:bg-blue-50"
+              >
+                {link.key}
+              </a>
+            ))}
+          </div>
+
+          {/* Right Side */}
+          <div className="flex items-center space-x-4">
+            <select
+              value={currentLanguage}
+              onChange={(e) => onLanguageChange(e.target.value)}
+              className="border rounded px-2 py-1"
             >
-              {t(link.key)}
-            </a>
-          ))}
+              {Object.entries(availableLanguages).map(([code, name]) => (
+                <option key={code} value={code}>
+                  {name}
+                </option>
+              ))}
+            </select>
+
+            {isLoggedIn && (
+              <>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={User}
+                  onClick={() => navigate('/artisan-profile')}
+                  ariaLabel="Access profile menu"
+                  className="px-3 py-1 text-sm"
+                >
+                  {text.myProfile}
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={LogOut}
+                  onClick={handleLogout}
+                  ariaLabel="Logout"
+                  className="px-3 py-1 text-sm"
+                >
+                  {text.logout}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
-
-        {/* Right Side */}
-        <div className="flex items-center space-x-4">
-          <LanguageSelector
-            selectedLanguage={language}
-            onLanguageChange={setLanguage}
-            languages={languages}
-          />
-
-          {isLoggedIn ? (
-  <>
-    <Button
-      variant="primary"
-      size="sm" // smaller size
-      icon={User}
-      onClick={() => navigate('/artisan-profile')}
-      ariaLabel="Access profile menu"
-      className="px-3 py-1 text-sm" // optional fine-tuning
-    >
-      {t(TRANSLATION_KEYS.NAV_MY_PROFILE)}
-    </Button>
-
-    <Button
-      variant="secondary"
-      size="sm" // smaller size
-      icon={LogOut}
-      onClick={handleLogout}
-      ariaLabel="Logout"
-      className="px-3 py-1 text-sm" // optional fine-tuning
-    >
-      {t(TRANSLATION_KEYS.NAV_LOGOUT) || 'Logout'}
-    </Button>
-  </>
-) : (
-  <Button
-    variant="primary"
-    size="md"
-    onClick={() => navigate('/login')}
-  >
-    {t(TRANSLATION_KEYS.NAV_LOGIN) || 'Login'}
-  </Button>
-)}
-        </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };
 

@@ -1,78 +1,66 @@
-import bcrypt from "bcrypt";
-import db from "../config/db.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import pool from '../config/db.js';
 
-// Register new user
+dotenv.config();
+
+// ------------------- REGISTER -------------------
 export const registerUser = async (req, res) => {
+  const { name, phone, email, password, businessName, businessLocation, seller } = req.body;
+
+  if (!name || !phone || !password || !businessName || !businessLocation || !seller) {
+    return res.status(400).json({ message: 'All required fields must be provided' });
+  }
+
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      phone,
-      password,
-      role,
-      businessName,
-      businessType,
-      location, // corresponds to business_location
-      experience,
-      interests
-    } = req.body;
+    // Check if user already exists by email or phone
+    const [existing] = await pool.query(
+      'SELECT id FROM users WHERE email = ? OR phone = ?',
+      [email || '', phone]
+    );
 
-    // Validate required fields
-    if (!firstName || !lastName || !email || !phone || !password || !role) {
-      return res.status(400).json({ message: "All required fields must be filled" });
-    }
-
-    // Check if email already exists
-    const [existing] = await db.query("SELECT id FROM users WHERE email = ?", [email]);
     if (existing.length > 0) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(409).json({ message: 'User with this email or phone already exists' });
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Combine first and last name
-    const fullName = `${firstName} ${lastName}`;
+    const password_hash = await bcrypt.hash(password, 10);
 
     // Insert into users table
-    const [result] = await db.query(
-      "INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)",
-      [fullName, email, phone, hashedPassword, role]
+    const [result] = await pool.query(
+      'INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)',
+      [name, email || null, phone, password_hash, seller === 'seller' ? 'seller' : 'customer']
     );
 
-    // If role is seller, create seller profile
-    if (role === "seller") {
-      if (!businessName || !businessType || !location) {
-        return res.status(400).json({ message: "Seller business information is required" });
-      }
+    const userId = result.insertId;
 
-      await db.query(
-        "INSERT INTO sellers (user_id, business_name, business_type, business_location) VALUES (?, ?, ?, ?)",
-        [result.insertId, businessName, businessType, location]
+    // If seller, insert into sellers table
+    if (seller === 'seller') {
+      await pool.query(
+        'INSERT INTO sellers (user_id, business_name, business_location) VALUES (?, ?, ?)',
+        [userId, businessName, businessLocation]
       );
+    }
 
+    // Generate token
     const token = jwt.sign(
-      { id: user.id, role: user.role, email: user.email },
+      { id: userId, role: seller === 'seller' ? 'seller' : 'customer', email },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
-    
-        // Return user data and token
-    res.json({
+
+    res.status(201).json({
+      success: true,
       token,
       user: {
-        id: user.id,
-        name: user.name,
-        role: user.role,
-      },
+        id: userId,
+        name,
+        role: seller === 'seller' ? 'seller' : 'customer'
+      }
     });
-    
-    }
-
-
-  } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ message: "Server error" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 };

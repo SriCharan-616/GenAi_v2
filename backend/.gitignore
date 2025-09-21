@@ -1,4 +1,7 @@
 node_modules
 .env
 uploads
+<<<<<<< HEAD
 backend/src/serviceAccountKey.json
+=======
+>>>>>>> a9197b6d46ed0044f1421ca79f05bf256f0f73ee

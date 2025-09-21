@@ -129,7 +129,8 @@ export const getProducts = async (req, res) => {
 
       if (!imgSnap.empty) {
         const filename = imgSnap.docs[0].data().imagePath;
-        const filePath = path.join(process.cwd(), "uploads", filename); // correct path
+        const filePath =  path.join(process.cwd(), filename);
+        
 
         if (fs.existsSync(filePath)) {
           const buffer = fs.readFileSync(filePath);
@@ -140,7 +141,7 @@ export const getProducts = async (req, res) => {
       } else {
         product.photo = null;
       }
-
+      
       products.push(product);
     }
 

@@ -28,7 +28,7 @@ const ArtisanProfile = () => {
     try {
       
      
-      const productsRes = await fetch(`${import.meta.env.VITE_API_URL}api/products?sellerId=${sellerId}`);
+      const productsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/products?sellerId=${sellerId}`);
       if (!productsRes.ok) throw new Error('Failed to fetch products');
       const { products } = await productsRes.json();
 

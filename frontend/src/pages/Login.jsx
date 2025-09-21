@@ -32,10 +32,10 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.emailOrPhone.trim()) {
-      newErrors.emailOrPhone = text.emailOrPhoneRequired || 'Email/Phone is required';
+      newErrors.emailOrPhone = text.emailOrPhoneRequired;
     }
     if (!formData.password.trim()) {
-      newErrors.password = text.passwordRequired || 'Password is required';
+      newErrors.password = text.passwordRequired;
     }
     return newErrors;
   };
@@ -93,17 +93,17 @@ const Login = () => {
           <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                {text.welcomeBack || 'Welcome Back'}
+                {text.welcomeBack}
               </h1>
               <p className="text-lg text-gray-600">
-                {text.loginDescription || 'Sign in to your ArtisanHub account'}
+                {text.loginDescription}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="emailOrPhone" className="block text-sm font-semibold text-gray-700 mb-2">
-                  {text.emailOrPhone || 'Email or Phone'} <span className="text-red-500">*</span>
+                  {text.emailOrPhone} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -115,7 +115,7 @@ const Login = () => {
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     errors.emailOrPhone ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder={text.enterEmailOrPhone || 'Enter your email or phone'}
+                  placeholder={text.enterEmailOrPhone}
                 />
                 {errors.emailOrPhone && (
                   <p className="mt-2 text-sm text-red-600">{errors.emailOrPhone}</p>
@@ -124,7 +124,7 @@ const Login = () => {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-                  {text.password || 'Password'} <span className="text-red-500">*</span>
+                  {text.password} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -136,7 +136,7 @@ const Login = () => {
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder={text.enterPassword || 'Enter your password'}
+                  placeholder={text.enterPassword}
                 />
                 {errors.password && (
                   <p className="mt-2 text-sm text-red-600">{errors.password}</p>
@@ -161,24 +161,24 @@ const Login = () => {
                 {isSubmitting ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    {text.signingIn || 'Signing In...'}
+                    {text.signingIn}
                   </div>
                 ) : (
-                  text.signIn || 'Sign In'
+                  text.signIn
                 )}
               </button>
             </form>
 
             <div className="mt-8 text-center">
               <p className="text-gray-600 mb-4">
-                {text.noAccount || "Don't have an account?"}
+                {text.noAccount}
               </p>
               <div className="space-y-2">
                 <a
                   href="/register"
                   className="block w-full py-3 px-4 bg-green-100 text-green-700 rounded-xl font-medium hover:bg-green-200 transition-colors"
                 >
-                  {text.artisanSignup || 'Register as Artisan'}
+                  {text.artisanSignup}
                 </a>
               </div>
             </div>

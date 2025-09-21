@@ -117,13 +117,13 @@ const defaultText = {
 export function MyProvider({ children }) {
   const [text, setText] = useState(() => {
     
-    const cached = sessionStorage.getItem("translations");
+    const cached = localStorage.getItem("translations");
     return cached ? JSON.parse(cached) : defaultText;
   });
 
   // Save to sessionStorage whenever text changes
   useEffect(() => {
-    sessionStorage.setItem("translations", JSON.stringify(text));
+    localStorage.setItem("translations", JSON.stringify(text));
   }, [text]);
 
   return (

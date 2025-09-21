@@ -35,7 +35,7 @@ const Homepage = () => {
   const reviews = [
     { name: "Maria Rodriguez", rating: 5, text: text.review1, avatar: "https://images.unsplash.com/photo-1494790108755-2616b612e6cd?w=60", location: "Mexico City" },
     { name: "James Chen", rating: 5, text: text.review2, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60", location: "San Francisco" },
-    { name: "Priya Sharma", rating: 5, text: "Easy to use even for someone like me who's not tech-savvy. Wonderful!", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60", location: "Mumbai" }
+    { name: "Priya Sharma", rating: 5, text: text.review3, avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60", location: "Mumbai" }
   ];
 
   useEffect(() => {
@@ -130,7 +130,7 @@ const Homepage = () => {
                 </Button>
               </div>
               <p className="mt-4 text-sm text-gray-600 max-w-2xl mx-auto">
-                Join thousands of artisans and customers in our growing marketplace
+                {text.artwelcome}
               </p>
             </div>
           </section>

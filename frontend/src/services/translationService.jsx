@@ -33,6 +33,8 @@ const DEFAULT_TRANSLATIONS = {
   'auth.signin': 'Sign In',
   'auth.register': 'Register',
   'auth.or': 'or',
+  'art.welcome':'Join Our Artisan Community',
+  'art.wish':'Share your craftsmanship with the world and connect with customers who appreciate handmade quality.',
   'explore.title': 'Explore More Products',
   'explore.subtitle': 'Discover thousands of unique handmade products',
   'explore.viewAll': 'View All',

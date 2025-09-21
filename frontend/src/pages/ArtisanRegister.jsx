@@ -4,6 +4,8 @@ import { useSpeech } from '../hooks/useSpeech';
 import { useSEO } from '../utils/seo';
 import '../styles/ArtisanRegister.css';
 import { useNavigate } from 'react-router-dom';
+import { useTranslator } from '../services/translationContext'; // ✅ Add this import
+import { TRANSLATION_KEYS } from '../constants/translationKeys';
 
 // Components
 import BackgroundAnimation from '../components/common/BackgroundAnimation';
@@ -13,6 +15,7 @@ import FloatingButtons from '../components/common/FloatingButtons';
 
 
 const ArtisanRegister = () => {
+  const { t } = useTranslator();
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -193,10 +196,10 @@ const ArtisanRegister = () => {
             {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                {translations.joinArtisanCommunity || 'Join Our Artisan Community'}
+              {t(TRANSLATION_KEYS.ARTISAN_WELCOME)}
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                {translations.registerDescription || 'Share your craftsmanship with the world and connect with customers who appreciate handmade quality.'}
+                {t(TRANSLATION_KEYS.ARTISAN_WISH)}
               </p>
             </div>
 

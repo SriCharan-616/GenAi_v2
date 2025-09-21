@@ -47,6 +47,10 @@ export const TRANSLATION_KEYS = {
   COMMON_LISTEN: 'common.listen',
   COMMON_DISCOVER: 'common.discover',
   
+  //Artisan
+  ARTISAN_WELCOME:'art.welcome',
+  ARTISAN_WISH:'art.wish',
+
   // Errors
   ERROR_TRANSLATION_FETCH: 'error.translationFetch',
   ERROR_SPEECH_NOT_SUPPORTED: 'error.speechNotSupported',

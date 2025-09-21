@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslations } from '../hooks/useTranslations';
 import { useSpeech } from '../hooks/useSpeech';
 import { useSEO } from '../utils/seo';
-
 // Components
 import BackgroundAnimation from '../components/common/BackgroundAnimation';
 import Navigation from '../components/common/Navigation';
@@ -13,7 +12,6 @@ const ArtisanProfile = () => {
   const [activeTab, setActiveTab] = useState('create'); // 'create' or 'products'
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProductForm, setShowProductForm] = useState(true);
-  
   // Product form state
   const [productForm, setProductForm] = useState({
     name: '',

@@ -2,35 +2,28 @@ import React, { useState, useEffect } from 'react';
 
 import { useSpeech } from '../hooks/useSpeech';
 import { useNavigate } from 'react-router-dom';
+import { useMyContext } from "../services/translationContext";
 
 import Navigation from '../components/common/Navigation';
 import FloatingButtons from '../components/common/FloatingButtons';
 
 const ArtisanRegister = () => {
   const [formData, setFormData] = useState({
-  name: '',
-  phone: '',
-  email: '',
-  password: '',         // <-- add this
-  businessName: '',
-  businessLocation: '',
-  seller: 'seller'      // default to seller
-});
+    name: '',
+    phone: '',
+    email: '',
+    password: '',
+    businessName: '',
+    businessLocation: '',
+    seller: 'seller'
+  });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const {
-    selectedLanguage,
-    translations,
-    languages,
-    loading: translationsLoading,
-    error: translationsError,
-    changeLanguage
-  } = useTranslations('en');
-
-  const { speak, isSpeaking, isSupported } = useSpeech(selectedLanguage);
+  const { text } = useMyContext();
+  const { speak, isSpeaking, isSupported } = useSpeech('en');
   const navigate = useNavigate();
 
   // Load saved login state
@@ -62,25 +55,31 @@ const ArtisanRegister = () => {
     const newErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = translations.nameRequired || 'Name is required';
+      newErrors.name = text.nameRequired;
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = translations.phoneRequired || 'Phone number is required';
+      newErrors.phone = text.phoneRequired;
     } else if (!/^\+?[\d\s\-\(\)]+$/.test(formData.phone)) {
-      newErrors.phone = translations.phoneInvalid || 'Please enter a valid phone number';
+      newErrors.phone = text.phoneInvalid;
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = text.passwordRequired;
+    } else if (formData.password.length < 6) {
+      newErrors.password = text.passwordTooShort;
     }
 
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = translations.emailInvalid || 'Please enter a valid email address';
+      newErrors.email = text.emailInvalid;
     }
 
     if (!formData.businessName.trim()) {
-      newErrors.businessName = translations.businessNameRequired || 'Business name is required';
+      newErrors.businessName = text.businessNameRequired;
     }
 
     if (!formData.businessLocation.trim()) {
-      newErrors.businessLocation = translations.businessLocationRequired || 'Business location is required';
+      newErrors.businessLocation = text.businessLocationRequired;
     }
 
     return newErrors;
@@ -116,11 +115,11 @@ const ArtisanRegister = () => {
         localStorage.setItem('artisanData', JSON.stringify(result.user));
         navigate('/artisan-profile');
       } else {
-        setErrors({ submit: result.message || 'Registration failed. Please try again.' });
+        setErrors({ submit: result.message || text.registrationFailed });
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setErrors({ submit: 'Registration failed. Please try again later.' });
+      setErrors({ submit: text.registrationFailedTryLater });
     } finally {
       setIsSubmitting(false);
     }
@@ -128,15 +127,7 @@ const ArtisanRegister = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 relative">
-      <Navigation
-        translations={translations}
-        selectedLanguage={selectedLanguage}
-        onLanguageChange={changeLanguage}
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
-        languages={languages}
-        loading={translationsLoading}
-      />
+      <Navigation />
 
       <main id="main-content" className="pt-20 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -144,11 +135,10 @@ const ArtisanRegister = () => {
             {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                {translations.joinArtisanCommunity || 'Join Our Artisan Community'}
+                {text.joinArtisanCommunity}
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                {translations.registerDescription ||
-                  'Share your craftsmanship with the world and connect with customers who appreciate handmade quality.'}
+                {text.registerDescription}
               </p>
             </div>
 
@@ -158,7 +148,7 @@ const ArtisanRegister = () => {
                 {/* Name */}
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {translations.fullName || 'Full Name'} <span className="text-red-500">*</span>
+                    {text.fullName} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -169,7 +159,7 @@ const ArtisanRegister = () => {
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       errors.name ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder={translations.enterFullName || 'Enter your full name'}
+                    placeholder={text.enterFullName}
                   />
                   {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
                 </div>
@@ -177,7 +167,7 @@ const ArtisanRegister = () => {
                 {/* Phone */}
                 <div>
                   <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {translations.phoneNumber || 'Phone Number'} <span className="text-red-500">*</span>
+                    {text.phoneNumber} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -188,29 +178,35 @@ const ArtisanRegister = () => {
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       errors.phone ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder={translations.enterPhone || 'Enter your phone number'}
+                    placeholder={text.enterPhone}
                   />
                   {errors.phone && <p className="mt-2 text-sm text-red-600">{errors.phone}</p>}
                 </div>
-                    <div>
-  <label htmlFor="password" className='block text-sm font-semibold text-gray-700 mb-2'>Password <span className="text-red-500">*</span></label>
-  <input
-    type="password"
-    id="password"
-    name="password"
-    value={formData.password}
-    onChange={handleInputChange}
-    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.phone ? 'border-red-500' : 'border-gray-300'
+
+                {/* Password */}
+                <div>
+                  <label htmlFor="password" className='block text-sm font-semibold text-gray-700 mb-2'>
+                    {text.password} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.password ? 'border-red-500' : 'border-gray-300'
                     }`}
-    placeholder={translations.enterPassword || 'Enter your password'}
-  />
-</div>
+                    placeholder={text.enterPassword}
+                  />
+                  {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
+                </div>
+
                 {/* Email */}
                 <div>
                   <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {translations.email || 'Email'}{' '}
-                    <span className="text-gray-500 text-xs">({translations.optional || 'Optional'})</span>
+                    {text.email}{' '}
+                    <span className="text-gray-500 text-xs">({text.optional})</span>
                   </label>
                   <input
                     type="email"
@@ -221,7 +217,7 @@ const ArtisanRegister = () => {
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       errors.email ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder={translations.enterEmail || 'Enter your email address'}
+                    placeholder={text.enterEmail}
                   />
                   {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
                 </div>
@@ -229,7 +225,7 @@ const ArtisanRegister = () => {
                 {/* Business Name */}
                 <div>
                   <label htmlFor="businessName" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {translations.businessName || 'Business Name'} <span className="text-red-500">*</span>
+                    {text.businessName} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -240,7 +236,7 @@ const ArtisanRegister = () => {
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       errors.businessName ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder={translations.enterBusinessName || 'Enter your business name'}
+                    placeholder={text.enterBusinessName}
                   />
                   {errors.businessName && <p className="mt-2 text-sm text-red-600">{errors.businessName}</p>}
                 </div>
@@ -248,7 +244,7 @@ const ArtisanRegister = () => {
                 {/* Business Location */}
                 <div>
                   <label htmlFor="businessLocation" className="block text-sm font-semibold text-gray-700 mb-2">
-                    {translations.businessLocation || 'Business Location'} <span className="text-red-500">*</span>
+                    {text.businessLocation} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -259,7 +255,7 @@ const ArtisanRegister = () => {
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       errors.businessLocation ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder={translations.enterBusinessLocation || 'Enter your business location'}
+                    placeholder={text.enterBusinessLocation}
                   />
                   {errors.businessLocation && (
                     <p className="mt-2 text-sm text-red-600">{errors.businessLocation}</p>
@@ -286,10 +282,10 @@ const ArtisanRegister = () => {
                   {isSubmitting ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      {translations.registering || 'Registering...'}
+                      {text.registering}
                     </div>
                   ) : (
-                    translations.registerAsArtisan || 'Register as Artisan'
+                    text.registerAsArtisan
                   )}
                 </button>
               </form>
@@ -297,9 +293,9 @@ const ArtisanRegister = () => {
               {/* Login Link */}
               <div className="mt-8 text-center">
                 <p className="text-gray-600">
-                  {translations.alreadyRegistered || 'Already registered?'}{' '}
+                  {text.alreadyRegistered}{' '}
                   <a href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-                    {translations.signIn || 'Sign in'}
+                    {text.signIn}
                   </a>
                 </p>
               </div>
@@ -308,11 +304,11 @@ const ArtisanRegister = () => {
         </div>
       </main>
 
-      <FloatingButtons speak={speak} translations={translations} isSpeaking={isSpeaking} isLoggedIn={isLoggedIn} />
+      <FloatingButtons speak={speak} translations={text} isSpeaking={isSpeaking} isLoggedIn={isLoggedIn} />
 
       {!isSupported && (
         <div className="fixed bottom-4 left-4 bg-yellow-100 border border-yellow-300 text-yellow-800 px-4 py-2 rounded-lg shadow-lg z-40">
-          {translations.speechNotSupported || 'Text-to-speech is not supported in your browser.'}
+          {text.speechNotSupported}
         </div>
       )}
     </div>

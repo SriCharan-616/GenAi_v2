@@ -17,6 +17,7 @@ const defaultText = {
   password:'Password',
   emailOrPhoneRequired:'Email/Phone is required',
   passwordRequired:'Password is required',
+  passwordTooShort:'Password must be at least 6 characters',
   enterPassword:'Enter your password',
   signIn:'Sign In',
   noAccount:'Don\'t have an account?',
@@ -81,7 +82,33 @@ const defaultText = {
   priceRequired: "Valid price is required",
   categoryRequired: "Category is required",
   productCreationError: "Failed to create product. Please try again.",
-  speechNotSupported: "Text-to-speech is not supported in your browser."
+  speechNotSupported: "Text-to-speech is not supported in your browser.",
+  
+  // New keys for ArtisanRegister component
+  joinArtisanCommunity: 'Join Our Artisan Community',
+  registerDescription: 'Share your craftsmanship with the world and connect with customers who appreciate handmade quality.',
+  fullName: 'Full Name',
+  nameRequired: 'Name is required',
+  enterFullName: 'Enter your full name',
+  phoneNumber: 'Phone Number',
+  phoneRequired: 'Phone number is required',
+  phoneInvalid: 'Please enter a valid phone number',
+  enterPhone: 'Enter your phone number',
+  email: 'Email',
+  emailInvalid: 'Please enter a valid email address',
+  enterEmail: 'Enter your email address',
+  optional: 'Optional',
+  businessName: 'Business Name',
+  businessNameRequired: 'Business name is required',
+  enterBusinessName: 'Enter your business name',
+  businessLocation: 'Business Location',
+  businessLocationRequired: 'Business location is required',
+  enterBusinessLocation: 'Enter your business location',
+  registering: 'Registering...',
+  registerAsArtisan: 'Register as Artisan',
+  alreadyRegistered: 'Already registered?',
+  registrationFailed: 'Registration failed. Please try again.',
+  registrationFailedTryLater: 'Registration failed. Please try again later.',
 };
 
 export function MyProvider({ children }) {

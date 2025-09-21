@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 config();
 
 export const translateText = async (req, res) => {
-  const availableLanguages = {
+  const supportedLanguages = {
     'en': 'English', 'hi': 'हिन्दी', 'bn': 'বাংলা', 'te': 'తెలుగు',
     'mr': 'मराठी', 'ta': 'தமிழ்', 'gu': 'ગુજરાતી', 'ur': 'اردو',
     'kn': 'ಕನ್ನಡ', 'or': 'ଓଡ଼ିଆ', 'pa': 'ਪੰਜਾਬੀ', 'as': 'অসমীয়া',

@@ -55,7 +55,6 @@ export const uploadProduct = async (req, res) => {
       description: description || "",
       price: parseFloat(price),
       category: category || "",
-      stock: 0,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });

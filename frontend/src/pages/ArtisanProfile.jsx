@@ -134,7 +134,7 @@ const ArtisanProfile = () => {
       productForm.photos.forEach(file => formData.append('photos', file));
 
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      console.log(currentUser.id);
+    
       formData.append('seller_id', currentUser.id);
       const response = await fetch('http://localhost:5000/api/products/uploadprod', {
         method: 'POST',

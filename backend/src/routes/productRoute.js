@@ -18,7 +18,7 @@ router.post("/upload", uploadImageMiddleware, (req, res) => {
 });
 
 // Product CRUD operations
-router.post("/uploadprod", upload.array("images", 10), uploadProduct); // Create product with images
+router.post("/uploadprod", upload.array("photos", 10), uploadProduct); // Create product with images
 router.get("/products", getProducts); // Get all products with filtering/pagination
 
 

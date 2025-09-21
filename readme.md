@@ -1,3 +1,4 @@
+# singlehomepage branch is our main branch
 # ArtisanHub
 
 The first artisan-focused digital marketplace integrating AI content generation, AR/3D visualization, multilingual chatbot support, and storytelling — enabling artisans to scale digitally while preserving their craft.

@@ -47,28 +47,23 @@ const Homepage = () => {
 
   const products = {
     trending: [
-      { id: 1, name: "Handwoven Basket", price: "$45", image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300", likes: 124 },
-      { id: 2, name: "Ceramic Vase", price: "$32", image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68399?w=300", likes: 89 },
-      { id: 3, name: "Wooden Bowl", price: "$28", image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300", likes: 156 }
+      { id: 1, name: "Handwoven Basket", price: "$45", image: "/sample/1.jpg", likes: 124 },
+      { id: 2, name: "Ceramic Vase", price: "$32", image: "/sample/2.jpg", likes: 89 },
+      { id: 3, name: "Wooden Bowl", price: "$28", image: "/sample/3.jpg", likes: 156 }
     ],
     seasonal: [
-      { id: 4, name: "Holiday Ornaments", price: "$15", image: "https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=300", likes: 203 },
-      { id: 5, name: "Winter Scarf", price: "$38", image: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5e?w=300", likes: 92 },
-      { id: 6, name: "Candle Set", price: "$25", image: "https://images.unsplash.com/photo-1602874801006-10296707d777?w=300", likes: 167 }
-    ],
-    bestselling: [
-      { id: 7, name: "Leather Bag", price: "$85", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300", likes: 298 },
-      { id: 8, name: "Silver Jewelry", price: "$65", image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300", likes: 234 },
-      { id: 9, name: "Knitted Sweater", price: "$55", image: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=300", likes: 189 }
+      { id: 4, name: "Holiday Ornaments", price: "$15", image: "/sample/6.jpeg", likes: 203 },
+      { id: 5, name: "Winter Scarf", price: "$38", image: "/sample/4.jpg", likes: 92 },
+      { id: 6, name: "Candle Set", price: "$25", image: "/sample/5.jpg", likes: 167 }
     ]
   };
 
-  const tabs = ['trending', 'seasonal', 'bestselling'];
+  const tabs = ['trending', 'seasonal'];
 
   const sampleImages = [
-    { before: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&q=50", after: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200", alt: "Handwoven basket enhancement" },
-    { before: "https://images.unsplash.com/photo-1578749556568-bc2c40e68399?w=200&q=50", after: "https://images.unsplash.com/photo-1578749556568-bc2c40e68399?w=200", alt: "Ceramic vase enhancement" },
-    { before: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=50", after: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200", alt: "Wooden bowl enhancement" }
+    { before: "/sample/7.jpeg", after: "/sample/8.jpeg", alt: "Handwoven basket enhancement" },
+    { before: "/sample/9.jpeg", after: "/sample/10.jpeg", alt: "Ceramic vase enhancement" },
+    { before: "/sample/11.jpeg", after: "/sample/12.jpeg", alt: "Wooden bowl enhancement" }
   ];
 
   const handleProductAction = (action, productId, productName) => {
@@ -171,7 +166,7 @@ const Homepage = () => {
               {products[activeTab].map(product => (
                 <Card key={product.id} className="overflow-hidden" padding={false}>
                   <div className="relative group">
-                    <LazyImage src={product.image} alt={product.name} className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"/>
+                    <LazyImage src={product.image} alt={product.name} className="w-full h-64 object-contain transition-transform duration-300 group-hover:scale-110"/>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between">
                         <button onClick={() => handleProductAction('like', product.id, product.name)} className="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-500" aria-label={`Like ${product.name}`}>
@@ -265,8 +260,8 @@ const Homepage = () => {
               {text.exploreViewAll}
             </Button>
           </div>
-          <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-pulse" aria-hidden="true"></div>
-          <div className="absolute bottom-10 left-10 w-24 h-24 bg-white/10 rounded-full animate-bounce" aria-hidden="true"></div>
+          <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full " aria-hidden="true"></div>
+          <div className="absolute bottom-10 left-10 w-24 h-24 bg-white/10 rounded-full " aria-hidden="true"></div>
         </section>
 
       </main>

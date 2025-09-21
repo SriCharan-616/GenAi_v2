@@ -19,7 +19,7 @@ const sendToGemini = async (imageBuffer) => {
   });
 
   const result = await model.generateContent([
-    { text: "Enhance this product image for e-commerce" },
+    { text: "Enhance this product image for e-commerce. Add captions to tell the greatness of handcrafted products and how much effort it takes. Make it so that it attracts users. Also give instgram uploadable format" },
     {
       inlineData: { data: base64Image, mimeType: "image/jpeg" },
     },

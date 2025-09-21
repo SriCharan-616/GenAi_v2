@@ -350,7 +350,7 @@ const ArtisanProfile = () => {
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {artisanData.products.map((product) => (
                         <div key={product.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                          <img src={product.photo} alt={product.name} className="w-full h-48 object-cover rounded-xl mb-2" />
+                          <img src={product.photo} alt={product.name} className="w-full h-48 object-contain rounded-xl mb-2" />
                           <h4 className="font-semibold text-gray-900">{product.name}</h4>
                           <p className="text-gray-600 text-sm">{product.description}</p>
                           <span className="text-blue-600 font-bold">₹{product.price}</span>

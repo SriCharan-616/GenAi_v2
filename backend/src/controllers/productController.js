@@ -35,6 +35,35 @@ const sendToGemini = async (imageBuffer) => {
   return imgBase64;
 };
 
+// NEW FUNCTION: Upload enhanced image to Cloudinary
+const uploadToCloudinary = async (enhancedImageBuffer, originalFileName) => {
+  try {
+    const FormData = (await import('form-data')).default;
+    const fetch = (await import('node-fetch')).default;
+    
+    const formData = new FormData();
+    formData.append('image', enhancedImageBuffer, {
+      filename: originalFileName,
+      contentType: 'image/jpeg'
+    });
+
+    const response = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/products/upload`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`Cloudinary upload failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result.fileUrl;
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    return null;
+  }
+};
+
 // Upload a new product
 export const uploadProduct = async (req, res) => {
   try {
@@ -77,14 +106,19 @@ export const uploadProduct = async (req, res) => {
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}${ext}`;
           const savePath = path.join(uploadsDir, fileName);
 
+          // Save locally (existing functionality)
           fs.writeFileSync(savePath, buffer);
           const relativePath = `/uploads/${fileName}`;
           imagePaths.push(relativePath);
 
-          // store image record separately
+          // NEW: Upload to Cloudinary
+          const cloudinaryUrl = await uploadToCloudinary(buffer, fileName);
+
+          // store image record separately with both local and cloudinary paths
           await db.collection("product_images").add({
             productId,
-            imagePath: relativePath,
+            imagePath: relativePath, // local path
+            cloudinaryUrl: cloudinaryUrl, // NEW: cloudinary URL
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
         } catch (err) {
@@ -128,15 +162,22 @@ export const getProducts = async (req, res) => {
         .get();
 
       if (!imgSnap.empty) {
-        const filename = imgSnap.docs[0].data().imagePath;
-        const filePath =  path.join(process.cwd(), filename);
+        const imageDoc = imgSnap.docs[0].data();
         
-
-        if (fs.existsSync(filePath)) {
-          const buffer = fs.readFileSync(filePath);
-          product.photo = `data:image/jpg;base64,${buffer.toString("base64")}`;
+        // NEW: Try to use Cloudinary URL first, fallback to local
+        if (imageDoc.cloudinaryUrl) {
+          product.photo = imageDoc.cloudinaryUrl;
         } else {
-          product.photo = null;
+          // Fallback to local storage
+          const filename = imageDoc.imagePath;
+          const filePath = path.join(process.cwd(), filename);
+          
+          if (fs.existsSync(filePath)) {
+            const buffer = fs.readFileSync(filePath);
+            product.photo = `data:image/jpg;base64,${buffer.toString("base64")}`;
+          } else {
+            product.photo = null;
+          }
         }
       } else {
         product.photo = null;

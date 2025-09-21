@@ -13,13 +13,13 @@ const Navigation = ({ body }) => {
   const currentLanguage = localStorage.getItem('currentLanguage') || 'en';
 
   const availableLanguages = {
-    'en': 'English', 'hi': 'Hindi', 'bn': 'Bengali', 'te': 'Telugu',
-    'mr': 'Marathi', 'ta': 'Tamil', 'gu': 'Gujarati', 'ur': 'Urdu',
-    'kn': 'Kannada', 'or': 'Odia', 'pa': 'Punjabi', 'as': 'Assamese',
-    'ml': 'Malayalam', 'fr': 'French', 'es': 'Spanish', 'de': 'German',
-    'it': 'Italian', 'pt': 'Portuguese', 'ru': 'Russian', 'ja': 'Japanese',
-    'ko': 'Korean', 'zh': 'Chinese', 'ar': 'Arabic'
-  };
+    'en': 'English', 'hi': 'हिन्दी', 'bn': 'বাংলা', 'te': 'తెలుగు',
+    'mr': 'मराठी', 'ta': 'தமிழ்', 'gu': 'ગુજરાતી', 'ur': 'اردو',
+    'kn': 'ಕನ್ನಡ', 'or': 'ଓଡ଼ିଆ', 'pa': 'ਪੰਜਾਬੀ', 'as': 'অসমীয়া',
+    'ml': 'മലയാളം', 'fr': 'Français', 'es': 'Español', 'de': 'Deutsch',
+    'it': 'Italiano', 'pt': 'Português', 'ru': 'Русский', 'ja': '日本語',
+    'ko': '한국어', 'zh': '中文', 'ar': 'العربية'
+};
 
   const onLanguageChange = async (newLang) => {
     localStorage.setItem('currentLanguage', newLang);

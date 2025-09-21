@@ -24,43 +24,38 @@ const ArtisanProfile = () => {
   const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
 
   // Load artisan data
+   const fetchArtisanData = async (sellerId) => {
+    try {
+      
+     
+      const productsRes = await fetch(`http://localhost:5000/api/products?sellerId=${sellerId}`);
+      if (!productsRes.ok) throw new Error('Failed to fetch products');
+      const { products } = await productsRes.json();
+
+     setArtisanData(prev => ({
+      ...(prev || { id: sellerId }), 
+      products: products || []
+    }));
+    } catch (err) {
+      console.error('Error fetching artisan data:', err);
+      navigate('/');
+    }
+  };
+
+  //  On mount, fetch data directly from backend
   useEffect(() => {
     const savedLoginState = localStorage.getItem('isLoggedIn');
     if (savedLoginState !== 'true') {
       navigate('/');
       return;
     }
-
-    const savedArtisanData = localStorage.getItem('artisanData');
-    if (savedArtisanData) {
-      setArtisanData(JSON.parse(savedArtisanData));
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser?.id) {
+      fetchArtisanData(currentUser.id);
     } else {
-      const defaultArtisan = {
-        id: '1',
-        name: 'Artisan Name',
-        products: []
-      };
-      setArtisanData(defaultArtisan);
-      localStorage.setItem('artisanData', JSON.stringify(defaultArtisan));
-    }
-  }, []);
-
-  const fetchArtisanData = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('currentUser'));
-      if (!user?.id) return;
-
-      const res = await fetch('http://localhost:5000/api/artisan/${user.id}');
-      if (!res.ok) throw new Error('Failed to fetch artisan data');
-
-      const data = await res.json();
-      setArtisanData(data);
-      localStorage.setItem('artisanData', JSON.stringify(data));
-    } catch (error) {
-      console.error(error);
       navigate('/');
     }
-  };
+  }, [navigate]);
 
   const handleProductInputChange = (e) => {
     const { name, value } = e.target;
@@ -143,15 +138,10 @@ const ArtisanProfile = () => {
 
       if (!response.ok) throw new Error('Failed to create product');
 
-      const savedProduct = await response.json();
+      
 
-      const updatedArtisanData = {
-        ...artisanData,
-        products: [...(artisanData.products || []), savedProduct]
-      };
-
-      setArtisanData(updatedArtisanData);
-      localStorage.setItem('artisanData', JSON.stringify(updatedArtisanData));
+      
+      await fetchArtisanData(currentUser.id);
 
       setProductForm({
         name: '',
@@ -189,7 +179,7 @@ const ArtisanProfile = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              {text.welcome}, {artisanData.name}!
+              {text.welcome}!
             </h1>
             <p className="text-xl text-gray-600">{text.artisanDashboard}</p>
           </div>

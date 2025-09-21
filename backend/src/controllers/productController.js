@@ -108,19 +108,11 @@ export const uploadProduct = async (req, res) => {
 // Get all products with their first image
 export const getProducts = async (req, res) => {
   try {
-    const { category, sellerId, limit = 20, startAfter } = req.query;
+    const { sellerId, limit = 20 } = req.query;
 
     let query = db.collection("products");
-
-    if (category) query = query.where("category", "==", category);
     if (sellerId) query = query.where("sellerId", "==", sellerId);
-
-    query = query.orderBy("createdAt", "desc").limit(parseInt(limit));
-
-    if (startAfter) {
-      const startDoc = await db.collection("products").doc(startAfter).get();
-      if (startDoc.exists) query = query.startAfter(startDoc);
-    }
+    query = query.limit(parseInt(limit));
 
     const snapshot = await query.get();
     const products = [];
@@ -128,16 +120,23 @@ export const getProducts = async (req, res) => {
     for (const doc of snapshot.docs) {
       const product = { id: doc.id, ...doc.data() };
 
-      // get first image for this product
+      // get first image filename for this product
       const imgSnap = await db
         .collection("product_images")
         .where("productId", "==", doc.id)
-        .orderBy("createdAt", "asc")
         .limit(1)
         .get();
 
       if (!imgSnap.empty) {
-        product.photo = imgSnap.docs[0].data().imagePath; // for frontend display
+        const filename = imgSnap.docs[0].data().imagePath;
+        const filePath = path.join(process.cwd(), "uploads", filename); // correct path
+
+        if (fs.existsSync(filePath)) {
+          const buffer = fs.readFileSync(filePath);
+          product.photo = `data:image/jpg;base64,${buffer.toString("base64")}`;
+        } else {
+          product.photo = null;
+        }
       } else {
         product.photo = null;
       }

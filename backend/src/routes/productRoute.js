@@ -19,8 +19,8 @@ router.post("/upload", uploadImageMiddleware, (req, res) => {
 
 // Product CRUD operations
 router.post("/uploadprod", upload.array("photos", 10), uploadProduct); // Create product with images
-router.get("/products", getProducts); // Get all products with filtering/pagination
 
+router.get("/", getProducts);
 
 // Alternative route structure (if you prefer RESTful naming)
 // router.get("/", getProducts);

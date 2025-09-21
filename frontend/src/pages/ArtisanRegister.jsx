@@ -141,7 +141,7 @@ const ArtisanRegister = () => {
         // Store authentication data
         localStorage.setItem('token', result.token);
         localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('artisanData', JSON.stringify(result.user));
+        localStorage.setItem('currentUser', JSON.stringify(result.user));
         
         console.log('Registration successful:', result.user);
         
